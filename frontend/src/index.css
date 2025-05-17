@@ -2,16 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
-        "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
-        "Helvetica Neue", sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --primary: #333333;
+  --primary-dark: #222222;
+  --accent-teal: #4CD4B0;
+  --accent-khaki: #A2C579;
+  --light-green: #F3F9EE;
+  --text-light: #FFFFFF;
+  --text-dark: #1A1A1A;
 }
 
-code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-        monospace;
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+      "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+      "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #FFFFFF;
+  color: var(--text-dark);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+}
+
+/* Custom utility classes */
+.btn-primary {
+  @apply bg-[#4CD4B0] hover:bg-[#3EC0A0] text-white font-medium px-6 py-2 rounded-full transition-all duration-300;
+}
+
+.btn-secondary {
+  @apply bg-[#A2C579] hover:bg-[#94B568] text-white font-medium px-6 py-2 rounded-full transition-all duration-300;
+}
+
+.btn-outline {
+  @apply border border-[#4CD4B0] text-[#4CD4B0] hover:bg-[#4CD4B0] hover:text-white font-medium px-6 py-2 rounded-full transition-all duration-300;
+}
+
+/* Custom animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
 }
