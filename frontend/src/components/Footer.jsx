@@ -8,7 +8,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           <div className="lg:col-span-2">
             <Link to="/" className="flex items-center mb-4">
-              <span className="text-2xl font-bold text-white">dan<span className="text-accent-teal">.com</span></span>
+              <span className="text-2xl font-bold text-white">DNGun<span className="text-accent-teal">.com</span></span>
             </Link>
             <p className="text-gray-300 mb-4">
               The global marketplace for domain names.
