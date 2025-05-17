@@ -76,7 +76,7 @@ const Footer = () => {
         <div className="mt-12 pt-8 border-t border-gray-700">
           <div className="md:flex md:items-center md:justify-between">
             <p className="text-sm text-gray-300">
-              &copy; {new Date().getFullYear()} dan.com. All rights reserved.
+              &copy; {new Date().getFullYear()} DNGun.com. All rights reserved.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <Link to="/privacy" className="text-sm text-gray-300 hover:text-accent-teal">Privacy Policy</Link>
