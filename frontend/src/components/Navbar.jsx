@@ -12,7 +12,7 @@ const Navbar = () => {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0 flex items-center">
-              <span className="text-2xl font-bold text-primary">dan<span className="text-accent-teal">.com</span></span>
+              <span className="text-2xl font-bold text-primary">DNGun<span className="text-accent-teal">.com</span></span>
             </Link>
             <div className="ml-6 hidden lg:flex space-x-8">
               <Link to="/buy-domain" className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:border-accent-teal hover:text-gray-700">
