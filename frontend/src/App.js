@@ -1,12 +1,11 @@
-import React, { useState, useEffect, Suspense } from "react";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./App.css";
 
 // Components
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import CookieConsent from "./components/CookieConsent";
-import LoadingSpinner from "./components/LoadingSpinner";
 
 // Pages
 import HomePage from "./pages/HomePage";
