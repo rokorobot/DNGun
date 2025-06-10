@@ -245,7 +245,6 @@ const NotFoundPage = () => (
 
 function App() {
   const [isPageLoaded, setIsPageLoaded] = useState(false);
-  const [isNavigating, setIsNavigating] = useState(false);
 
   useEffect(() => {
     // Simulate page load delay for initial animations
@@ -254,39 +253,19 @@ function App() {
     }, 300);
   }, []);
 
-  // Page change tracker
-  const PageChangeTracker = () => {
-    const location = useLocation();
-    
-    useEffect(() => {
-      setIsNavigating(true);
-      const timer = setTimeout(() => {
-        setIsNavigating(false);
-      }, 500);
-      
-      return () => clearTimeout(timer);
-    }, [location]);
-    
-    return null;
-  };
-
   return (
     <div className={`App transition-opacity duration-500 ${isPageLoaded ? 'opacity-100' : 'opacity-0'}`}>
       <BrowserRouter>
-        <PageChangeTracker />
-        {isNavigating && <LoadingSpinner />}
         <Navbar />
         <main>
-          <Suspense fallback={<LoadingSpinner />}>
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/buy-domain" element={<BuyPage />} />
-              <Route path="/sell-domain" element={<SellPage />} />
-              <Route path="/domain/:domainName" element={<DomainDetailPage />} />
-              <Route path="/search" element={<SearchResultsPage />} />
-              <Route path="*" element={<NotFoundPage />} />
-            </Routes>
-          </Suspense>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/buy-domain" element={<BuyPage />} />
+            <Route path="/sell-domain" element={<SellPage />} />
+            <Route path="/domain/:domainName" element={<DomainDetailPage />} />
+            <Route path="/search" element={<SearchResultsPage />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
         </main>
         <Footer />
         <CookieConsent />
