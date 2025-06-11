@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./App.css";
+import axios from 'axios';
 
 // Components
 import Navbar from "./components/Navbar";
@@ -12,6 +13,12 @@ import HomePage from "./pages/HomePage";
 import BuyPage from "./pages/BuyPage";
 import SellPage from "./pages/SellPage";
 import DomainDetailPage from "./pages/DomainDetailPage";
+
+// Context
+import { AuthProvider } from "./context/AuthContext";
+
+// Set axios defaults
+axios.defaults.baseURL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000/api';
 
 // Mock search results page
 const SearchResultsPage = () => {
