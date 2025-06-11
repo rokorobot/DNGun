@@ -33,15 +33,14 @@ async def get_optional_current_user(
 @router.post("/checkout/domain", response_model=StripeCheckoutResponse)
 async def create_domain_checkout(
     request: StripeCheckoutRequest,
-    db: AsyncIOMotorDatabase = Depends(get_database),
-    current_user: Optional[User] = None  # Allow anonymous purchases
+    db: AsyncIOMotorDatabase = Depends(get_database)
 ):
     """
     Create a Stripe checkout session for domain purchase.
     
     Security: Domain price is fetched from backend database to prevent price manipulation.
     """
-    return await PaymentController.create_domain_checkout(request, current_user, db)
+    return await PaymentController.create_domain_checkout(request, None, db)
 
 @router.get("/status/{session_id}", response_model=PaymentStatusResponse)
 async def get_payment_status(
