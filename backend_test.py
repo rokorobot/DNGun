@@ -419,4 +419,5 @@ def test_comprehensive_api():
     return 0 if tester.tests_passed == tester.tests_run else 1
 
 if __name__ == "__main__":
-    sys.exit(test_comprehensive_api())
+    # Run the critical issues test by default
+    sys.exit(test_critical_issues())
