@@ -41,7 +41,7 @@ function App() {
   return (
     <div className={`App transition-opacity duration-500 ${isPageLoaded ? 'opacity-100' : 'opacity-0'}`}>
       <AuthProvider>
-        <BrowserRouter>
+        <HashRouter>
           <Navbar />
           <main>
             <Routes>
@@ -58,7 +58,7 @@ function App() {
           </main>
           <Footer />
           <CookieConsent />
-        </BrowserRouter>
+        </HashRouter>
       </AuthProvider>
     </div>
   );
