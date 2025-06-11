@@ -251,24 +251,30 @@ Now notifying the seller to transfer the domain...`,
 
   const notifySellerOfPayment = () => {
     if (getUserRole() === 'seller') {
+      const registry = getRegistryFromDomain(transaction.domain?.extension);
+      const pushReqs = getPushRequirements(registry);
+      
       addBotMessage(
         `💰 **Great news!** The buyer has transferred $${transaction.amount?.toLocaleString()} to our escrow service.
 
 Now it's your turn to transfer the domain. You have **two options**:
 
 **🚀 Option A: PUSH Domain (Recommended - Faster)**
-• **Same Registrar Transfer** (e.g., Namecheap-to-Namecheap)
+• **Same Registrar Transfer** (${registry}-to-${registry})
 • ❌ **No Auth Code Required**
-• 🔒 **Domain Lock:** Varies by registrar (some allow locked, others require unlock)
+• 🔒 **Domain Lock:** ${pushReqs.unlockRequired ? 'Must be unlocked' : 'Can remain locked'}
 • ⏱️ **Timeline:** 5-10 minutes
-• 💡 **Process:** Internal account ownership change
+• 💡 **Process:** Push to our verified ${registry} account: \`${pushReqs.marketplaceUsername}\`
 
 **📤 Option B: TRANSFER Domain**
-• **Different Registrar Transfer** (e.g., Namecheap-to-GoDaddy)
+• **Different Registrar Transfer** (${registry}-to-DNGun's-Registrar)
 • ✅ **Auth Code Required** (EPP Code)
 • 🔓 **Domain must be unlocked** (always required)
 • ⏱️ **Timeline:** 5-7 business days
-• 💡 **Process:** Move domain between registrars
+• 💡 **Process:** Transfer between different registrars
+
+**🏢 We have verified marketplace accounts at:**
+Namecheap, GoDaddy, Namesilo, Dynadot, Porkbun, Sav
 
 Which option would you prefer?`,
         [
