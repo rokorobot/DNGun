@@ -240,20 +240,28 @@ Now notifying the seller to transfer the domain...`,
   const notifySellerOfPayment = () => {
     if (getUserRole() === 'seller') {
       addBotMessage(
-        `💰 Great news! The buyer has transferred $${transaction.amount?.toLocaleString()} to our escrow service.
+        `💰 **Great news!** The buyer has transferred $${transaction.amount?.toLocaleString()} to our escrow service.
 
-Now it's your turn to transfer the domain. You have two options:
+Now it's your turn to transfer the domain. You have **two options**:
 
-**Option A: Push Domain (Recommended - Faster)**
-Push the domain directly to our marketplace account within the same registrar.
+**🚀 Option A: PUSH Domain (Recommended - Faster)**
+• **Same Registrar Transfer** (e.g., Namecheap-to-Namecheap)
+• ❌ **No Auth Code Required**
+• 🔒 **Domain can remain locked**
+• ⏱️ **Timeline:** 5-10 minutes
+• 💡 **Process:** Internal account ownership change
 
-**Option B: Transfer Domain** 
-Transfer the domain to our preferred registrar (may take 5-7 days).
+**📤 Option B: TRANSFER Domain**
+• **Different Registrar Transfer** (e.g., Namecheap-to-GoDaddy)
+• ✅ **Auth Code Required** (EPP Code)
+• 🔓 **Domain must be unlocked**
+• ⏱️ **Timeline:** 5-7 business days
+• 💡 **Process:** Move domain between registrars
 
 Which option would you prefer?`,
         [
-          { type: 'push_domain', label: '🚀 Push Domain (Fast)' },
-          { type: 'transfer_domain', label: '📤 Transfer Domain' }
+          { type: 'push_domain', label: '🚀 Push Domain (Fast & Easy)' },
+          { type: 'transfer_domain', label: '📤 Transfer Domain (Slow)' }
         ],
         2000
       );
