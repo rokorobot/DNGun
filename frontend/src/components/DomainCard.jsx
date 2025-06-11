@@ -7,14 +7,17 @@ const DomainCard = ({ domain }) => {
     return '$' + price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
 
+  // Get full domain name for display and URL
+  const fullDomainName = domain.extension ? `${domain.name}${domain.extension}` : domain.name;
+
   return (
     <Link 
-      to={`/domain/${domain.name}`} 
+      to={`/domain/${fullDomainName}`} 
       className="group bg-white rounded-lg shadow-sm hover:shadow-md transition-all p-4 border border-gray-100 flex flex-col justify-between h-full"
     >
       <div>
         <h3 className="text-lg font-semibold text-primary group-hover:text-accent-teal transition-colors">
-          {domain.name}
+          {fullDomainName}
         </h3>
         <div className="mt-2 flex items-center">
           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
