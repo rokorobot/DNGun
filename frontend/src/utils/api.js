@@ -40,6 +40,10 @@ api.interceptors.response.use(
 // Auth API methods
 export const authAPI = {
   login: async (email, password) => {
+    if (USE_MOCK_API) {
+      return mockAuthAPI.login(email, password);
+    }
+    
     const formData = new FormData();
     formData.append('username', email);
     formData.append('password', password);
@@ -55,6 +59,11 @@ export const authAPI = {
   
   register: async (userData) => {
     console.log('API register called with:', userData);
+    
+    if (USE_MOCK_API) {
+      return mockAuthAPI.register(userData);
+    }
+    
     console.log('Full API URL:', api.defaults.baseURL + '/auth/register');
     try {
       const response = await api.post('/auth/register', userData);
@@ -67,6 +76,10 @@ export const authAPI = {
   },
   
   getCurrentUser: async () => {
+    if (USE_MOCK_API) {
+      return mockAuthAPI.getCurrentUser();
+    }
+    
     const response = await api.get('/users/me');
     return response.data;
   },
