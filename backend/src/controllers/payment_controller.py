@@ -25,7 +25,13 @@ from ..controllers.domain_controller import get_domain_by_id
 
 # Initialize Stripe
 STRIPE_API_KEY = os.environ.get('STRIPE_API_KEY', 'sk_test_placeholder')
-stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY)
+
+# Only initialize Stripe if we have a valid key
+if STRIPE_API_KEY and STRIPE_API_KEY != 'sk_test_placeholder' and not STRIPE_API_KEY.endswith('_key'):
+    stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY)
+else:
+    stripe_checkout = None
+    print("⚠️  WARNING: Stripe API key not configured properly. Payment functionality will be limited.")
 
 class PaymentController:
     
