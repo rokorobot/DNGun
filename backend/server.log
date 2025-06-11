@@ -1,7 +1,0 @@
-INFO:     Will watch for changes in these directories: ['/app/backend']
-INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-INFO:     Started reloader process [2135] using StatReload
-INFO:     Started server process [2141]
-INFO:     Waiting for application startup.
-2025-06-11 00:16:03,462 - server - INFO - Connecting to MongoDB...
-INFO:     Application startup complete.
