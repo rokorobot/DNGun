@@ -840,6 +840,48 @@ Once unlocked, try the push process again.`,
     );
   };
 
+  const handlePushHelp = () => {
+    addUserMessage("I need help with the domain push process.");
+    
+    const registry = getRegistryFromDomain(transaction.domain?.extension);
+    const pushReqs = getPushRequirements(registry);
+    
+    addBotMessage(
+      `🚀 Here's a detailed guide for pushing your domain in ${registry}:
+
+1. **Login to ${registry}**
+   • Go to ${registry}'s website
+   • Sign in to your account
+
+2. **Navigate to Push/Transfer Section**
+   • Path: ${pushReqs.pushPath}
+
+3. **Select the Domain**
+   • Find "${transaction.domain?.name}${transaction.domain?.extension}"
+   • Choose "Push" or "Change Account Owner"
+
+4. **Enter DNGun Details**
+   • DNGun Username: ${pushReqs.marketplaceUsername}
+   • Double-check for typos!
+
+5. **Confirm Push**
+   • Review all details
+   • Confirm the transfer
+
+**Important Notes:**
+• ${pushReqs.notes}
+• Push should complete in 5-10 minutes
+• No auth code needed for push
+
+Need more specific help?`,
+      [
+        { type: 'confirm_push_complete', label: '✅ Push completed successfully' },
+        { type: 'unlock_for_push', label: '🔓 Help with unlocking' }
+      ],
+      2000
+    );
+  };
+
   const formatTimestamp = (timestamp) => {
     return timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
