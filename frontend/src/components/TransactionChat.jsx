@@ -261,18 +261,30 @@ Which option would you prefer?`,
   };
 
   const handleDomainPush = () => {
-    addUserMessage("I'll push the domain to the marketplace account.");
+    addUserMessage("I'll push the domain to the marketplace account (same registrar).");
     
     // Get registry information
     const registry = getRegistryFromDomain(transaction.domain?.extension);
     
     addBotMessage(
-      `🚀 Perfect! Push is the fastest option.
+      `🚀 Perfect! **Push is the fastest option** (same registrar transfer).
 
-**Registry Detected:** ${registry}
-**Marketplace Username:** dngun_marketplace_${registry.toLowerCase()}
+**📋 PUSH Process Details:**
+• **Registry:** ${registry}
+• **Auth Code:** ❌ Not required
+• **Domain Lock:** 🔒 Can remain locked
+• **Process:** Internal account ownership change
 
-Please log into your ${registry} account and push the domain "${transaction.domain?.name}${transaction.domain?.extension}" to our marketplace username above.
+**🎯 Instructions:**
+1. Log into your ${registry} account
+2. Go to Domain Management → Push Domain
+3. Push "${transaction.domain?.name}${transaction.domain?.extension}" to our marketplace account:
+   
+   **Marketplace Username:** dngun_marketplace_${registry.toLowerCase()}
+
+4. The receiving user (DNGun) will automatically accept the push
+
+**⏱️ Timeline:** Usually completes within 5-10 minutes
 
 Once the push is completed, please confirm below.`,
       [
@@ -284,18 +296,32 @@ Once the push is completed, please confirm below.`,
   };
 
   const handleDomainTransfer = () => {
-    addUserMessage("I'll transfer the domain to DNGun's preferred registrar.");
+    addUserMessage("I'll transfer the domain to DNGun's preferred registrar (different registrar).");
     
     addBotMessage(
-      `📤 Transfer option selected.
+      `📤 **Transfer option selected** (different registrar transfer).
 
-To initiate the transfer, I need the domain's authorization code (EPP code).
+**📋 TRANSFER Process Details:**
+• **Auth Code:** ✅ Required (EPP Code)
+• **Domain Lock:** 🔓 Must be unlocked first
+• **Process:** Move from your registrar to DNGun's registrar
+• **Timeline:** 5-7 business days
 
-Please log into your current registrar and obtain the auth code for "${transaction.domain?.name}${transaction.domain?.extension}".
+**🎯 Required Steps:**
+1. **Unlock the domain** in your current registrar
+2. **Obtain Authorization Code** (EPP Code) from your registrar
+3. **Provide the Auth Code** to initiate transfer to DNGun's registrar
 
-Once you have it, please provide it below.`,
+**⚠️ Important:** 
+- Domain transfers take significantly longer than pushes
+- Additional ICANN transfer fees may apply
+- Domain must be unlocked for transfer to proceed
+
+Are you ready to provide the authorization code?`,
       [
-        { type: 'provide_auth_code', label: '🔑 Provide Auth Code' }
+        { type: 'provide_auth_code', label: '🔑 Provide Auth Code' },
+        { type: 'unlock_help', label: '❓ How to unlock domain' },
+        { type: 'change_to_push', label: '🚀 Switch to Push (Faster)' }
       ],
       2000
     );
