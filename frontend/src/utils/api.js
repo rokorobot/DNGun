@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { mockAuthAPI, mockDomainAPI, mockTransactionAPI, mockUserAPI } from './mockApi';
+import { paymentAPI } from './paymentAPI';
 
 // Flag to determine if we should use mock APIs
 const USE_MOCK_API = false;
