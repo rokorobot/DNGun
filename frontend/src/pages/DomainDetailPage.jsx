@@ -430,7 +430,7 @@ const DomainDetailPage = () => {
                     </div>
                   </div>
                   
-                  {domain.status === 'available' && (
+                  {(domain.status === 'available' || domain.status === 'pending') && (
                     <div className="mt-6">
                       <button 
                         onClick={handlePurchaseClick}
@@ -441,6 +441,22 @@ const DomainDetailPage = () => {
                       <button className="w-full bg-white border border-accent-teal text-accent-teal hover:bg-light-green font-medium px-6 py-3 rounded-md transition-all duration-300">
                         Make an Offer
                       </button>
+                    </div>
+                  )}
+                  
+                  {domain.status === 'sold' && (
+                    <div className="mt-6">
+                      <div className="w-full bg-gray-400 text-white font-medium px-6 py-3 rounded-md text-center">
+                        Domain Sold
+                      </div>
+                    </div>
+                  )}
+                  
+                  {domain.status === 'not-available' && (
+                    <div className="mt-6">
+                      <div className="w-full bg-gray-400 text-white font-medium px-6 py-3 rounded-md text-center">
+                        Not Available
+                      </div>
                     </div>
                   )}
                   
