@@ -20,6 +20,7 @@ import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 import PaymentTestPage from "./pages/PaymentTestPage";
 import DashboardPage from "./pages/DashboardPage";
 import MyDomainsPage from "./pages/MyDomainsPage";
+import ProfilePage from "./pages/ProfilePage";
 
 // API utilities
 import { domainAPI } from "./utils/api";
