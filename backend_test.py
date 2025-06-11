@@ -643,6 +643,46 @@ def main():
     
     return 0 if tester.tests_passed == tester.tests_run else 1
 
+def create_test_domain():
+    """Create a test domain for payment testing"""
+    # Get backend URL from environment
+    backend_url = os.environ.get('REACT_APP_BACKEND_URL', 'https://fe2a4b0f-3203-46bc-b0cf-2cc736b736fd.preview.emergentagent.com')
+    
+    print("\n🔍 CREATING TEST DOMAIN\n")
+    print(f"Backend URL: {backend_url}")
+    
+    # Setup tester
+    tester = DNGunAPITester(backend_url)
+    
+    # Login as admin
+    if not tester.test_login("admin@dngun.com", "admin123"):
+        print("❌ Login failed, cannot create test domain")
+        return None
+    
+    # Create a test domain
+    domain_data = {
+        "name": "testdomain",
+        "extension": ".com",
+        "price": 999.99,
+        "category": "business",
+        "description": "Test domain for payment integration testing"
+    }
+    
+    success, response = tester.run_test(
+        "Create Test Domain",
+        "POST",
+        "domains",
+        201,
+        data=domain_data
+    )
+    
+    if success:
+        print(f"✅ Created test domain: {response['name']}{response['extension']}")
+        return response
+    else:
+        print("❌ Failed to create test domain")
+        return None
+
 def test_stripe_payment_integration():
     """Test the Stripe payment integration specifically"""
     # Get backend URL from environment
@@ -660,9 +700,15 @@ def test_stripe_payment_integration():
     # Test getting available domains
     tester.test_get_all_domains()
     
+    # If no domains available, create a test domain
     if not tester.test_domain:
-        print("❌ No domain available for testing, stopping payment tests")
-        return 1
+        print("⚠️ No domains available, creating a test domain...")
+        test_domain = create_test_domain()
+        if test_domain:
+            tester.test_domain = test_domain
+        else:
+            print("❌ Could not create test domain, stopping payment tests")
+            return 1
     
     # Test payment endpoints
     print("\n🔍 Testing Payment Endpoints...")
