@@ -210,6 +210,9 @@ Once set up, return here to continue.`,
       case 'push_help':
         handlePushHelp();
         break;
+      case 'push_help':
+        handlePushHelp();
+        break;
       case 'unlock_for_push':
         handleUnlockForPush();
         break;
