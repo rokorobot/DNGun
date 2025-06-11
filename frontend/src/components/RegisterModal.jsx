@@ -43,9 +43,14 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
       // Remove confirmPassword before sending to API
       const { confirmPassword, ...userData } = formData;
       
+      console.log('Attempting to register user:', userData);
+      console.log('API URL:', process.env.REACT_APP_BACKEND_URL);
+      
       await register(userData);
+      console.log('Registration successful');
       onSwitchToLogin(); // Switch to login after successful registration
     } catch (error) {
+      console.error('Registration error:', error);
       setErrorMessage(error.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
