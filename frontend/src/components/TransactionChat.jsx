@@ -302,6 +302,95 @@ The code should be 8-16 characters long and may contain letters and numbers.`,
     );
   };
 
+  const handlePushUsernameConfirmation = () => {
+    addUserMessage("Domain push has been completed successfully.");
+    
+    addBotMessage(
+      `✅ Excellent! Domain push confirmed.
+
+Verifying domain ownership transfer...`,
+      [],
+      1500
+    );
+
+    setTimeout(() => {
+      addBotMessage(
+        `🔍 Domain ownership verified! 
+
+The domain "${transaction.domain?.name}${transaction.domain?.extension}" is now in DNGun's possession.
+
+Now I need to collect the buyer's registry information for the final transfer...`,
+        [],
+        3000
+      );
+
+      setTimeout(() => {
+        getBuyerRegistryInfo();
+      }, 2000);
+    }, 3000);
+  };
+
+  const getBuyerRegistryInfo = () => {
+    if (getUserRole() === 'buyer') {
+      const registry = getRegistryFromDomain(transaction.domain?.extension);
+      
+      addBotMessage(
+        `🎯 Final Step: Domain Transfer to Your Account
+
+To complete the transfer, I need your registry username for ${registry}.
+
+**Registry:** ${registry}
+**Your username at ${registry}:** (required)
+
+Please provide your ${registry} username below so we can push the domain directly to your account.
+
+💡 **Push vs Transfer:**
+• Push (recommended): Instant, within same registry
+• Transfer: 5-7 days, between different registries`,
+        [
+          { type: 'provide_buyer_username', label: '👤 Provide Registry Username' },
+          { type: 'prefer_transfer', label: '📤 I prefer domain transfer instead' }
+        ],
+        2000
+      );
+    }
+  };
+
+  const handleSetupPayment = () => {
+    addUserMessage("I'll set up my payment method now.");
+    
+    addBotMessage(
+      `⚙️ Setting up payment method...
+
+Please go to Settings → Payment Methods and configure:
+
+**Recommended Options:**
+• 🏦 Bank Account (ACH transfer - 1-2 days)
+• 💳 PayPal (Instant transfer)
+• 🪙 Cryptocurrency (Bitcoin, Ethereum)
+
+Once you've added a payment method, return here and click "Payment Ready".`,
+      [
+        { type: 'payment_ready', label: '✅ Payment method set up' }
+      ],
+      2000
+    );
+  };
+
+  const handlePaymentReady = () => {
+    addUserMessage("I have set up my payment method.");
+    
+    addBotMessage(
+      `✅ Great! Payment method configured.
+
+I'll notify you once the buyer transfers their payment to our escrow service. Please standby...
+
+You'll receive an email notification when it's time to transfer the domain.`,
+      [],
+      2000
+    );
+  };
+
   const handlePaymentHelp = () => {
     addUserMessage("I need help with the payment process.");
     
