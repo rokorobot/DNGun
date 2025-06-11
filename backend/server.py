@@ -71,3 +71,8 @@ async def root():
         "docs": "/docs",
         "api_prefix": "/api"
     }
+
+# Test endpoint
+@app.get("/test")
+async def test():
+    return {"message": "Test endpoint is working"}
