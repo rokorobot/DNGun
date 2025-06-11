@@ -191,7 +191,8 @@ async def add_transaction_chat_message(transaction_id: str, chat_message, curren
     # Save to database
     await db.transaction_chats.insert_one(message)
     
-    return message
+    # Return serialized message
+    return serialize_mongo_doc(message)
 
 async def get_transaction_chat_messages(transaction_id: str, current_user: User, db: AsyncIOMotorDatabase):
     # Find transaction
