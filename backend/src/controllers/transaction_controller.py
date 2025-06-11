@@ -7,6 +7,22 @@ from ..config.database import get_database
 from datetime import datetime
 import uuid
 
+def serialize_mongo_doc(doc):
+    """Convert MongoDB document to JSON serializable format"""
+    if doc is None:
+        return None
+    
+    # Convert ObjectId to string and remove it
+    if '_id' in doc:
+        del doc['_id']
+    
+    # Convert datetime objects to strings if needed
+    for key, value in doc.items():
+        if isinstance(value, datetime):
+            doc[key] = value.isoformat()
+    
+    return doc
+
 async def create_transaction(
     transaction_data: TransactionCreate, 
     current_user: User, 
