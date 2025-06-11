@@ -283,24 +283,28 @@ Which option would you prefer?`,
 **📋 PUSH Process Details:**
 • **Registry:** ${registry}
 • **Auth Code:** ❌ Not required
-• **Domain Lock:** 🔒 Can remain locked
+• **Domain Lock:** 🔒 **Depends on ${registry} policy** - some allow locked, others require unlock
 • **Process:** Internal account ownership change
 
 **🎯 Instructions:**
 1. Log into your ${registry} account
 2. Go to Domain Management → Push Domain
-3. Push "${transaction.domain?.name}${transaction.domain?.extension}" to our marketplace account:
+3. **Check if domain needs to be unlocked** (varies by registrar)
+4. Push "${transaction.domain?.name}${transaction.domain?.extension}" to our marketplace account:
    
    **Marketplace Username:** dngun_marketplace_${registry.toLowerCase()}
 
-4. The receiving user (DNGun) will automatically accept the push
+5. The receiving user (DNGun) will automatically accept the push
 
 **⏱️ Timeline:** Usually completes within 5-10 minutes
+
+**💡 Note:** If push fails due to lock status, try unlocking the domain first.
 
 Once the push is completed, please confirm below.`,
       [
         { type: 'confirm_push_complete', label: '✅ Domain push completed' },
-        { type: 'push_help', label: '❓ Need help with push process' }
+        { type: 'push_help', label: '❓ Need help with push process' },
+        { type: 'unlock_for_push', label: '🔓 Domain push failed - need to unlock' }
       ],
       2000
     );
