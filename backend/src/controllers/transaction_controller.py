@@ -142,7 +142,7 @@ async def get_user_transactions(current_user: User, db):
     })
     
     transactions = await transactions_cursor.to_list(length=100)
-    return [Transaction(**transaction) for transaction in transactions]
+    return [Transaction(**serialize_mongo_doc(transaction)) for transaction in transactions]
 
 async def update_transaction_status(transaction_id: str, status: str, current_user: User, db: AsyncIOMotorDatabase):
     # Find transaction
