@@ -250,14 +250,14 @@ Now it's your turn to transfer the domain. You have **two options**:
 **🚀 Option A: PUSH Domain (Recommended - Faster)**
 • **Same Registrar Transfer** (e.g., Namecheap-to-Namecheap)
 • ❌ **No Auth Code Required**
-• 🔒 **Domain can remain locked**
+• 🔒 **Domain Lock:** Varies by registrar (some allow locked, others require unlock)
 • ⏱️ **Timeline:** 5-10 minutes
 • 💡 **Process:** Internal account ownership change
 
 **📤 Option B: TRANSFER Domain**
 • **Different Registrar Transfer** (e.g., Namecheap-to-GoDaddy)
 • ✅ **Auth Code Required** (EPP Code)
-• 🔓 **Domain must be unlocked**
+• 🔓 **Domain must be unlocked** (always required)
 • ⏱️ **Timeline:** 5-7 business days
 • 💡 **Process:** Move domain between registrars
 
