@@ -127,3 +127,67 @@ async def get_user_transactions(current_user: User, db):
     
     transactions = await transactions_cursor.to_list(length=100)
     return [Transaction(**transaction) for transaction in transactions]
+
+async def update_transaction_status(transaction_id: str, status: str, current_user: User, db: AsyncIOMotorDatabase):
+    # Find transaction
+    transaction = await db.transactions.find_one({"id": transaction_id})
+    if not transaction:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+    
+    # Check if user is involved in transaction
+    if transaction["buyer_id"] != current_user.id and transaction["seller_id"] != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to access this transaction")
+    
+    # Update transaction status
+    await db.transactions.update_one(
+        {"id": transaction_id},
+        {
+            "$set": {
+                "status": status,
+                "updated_at": datetime.utcnow()
+            }
+        }
+    )
+    
+    return {"message": "Transaction status updated successfully"}
+
+async def add_transaction_chat_message(transaction_id: str, chat_message, current_user: User, db: AsyncIOMotorDatabase):
+    # Find transaction
+    transaction = await db.transactions.find_one({"id": transaction_id})
+    if not transaction:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+    
+    # Check if user is involved in transaction
+    if transaction["buyer_id"] != current_user.id and transaction["seller_id"] != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to access this transaction")
+    
+    # Create chat message
+    message = {
+        "id": str(uuid.uuid4()),
+        "transaction_id": transaction_id,
+        "user_id": current_user.id,
+        "username": current_user.username,
+        "message": chat_message.message,
+        "sender_type": chat_message.sender_type,
+        "timestamp": datetime.utcnow()
+    }
+    
+    # Save to database
+    await db.transaction_chats.insert_one(message)
+    
+    return message
+
+async def get_transaction_chat_messages(transaction_id: str, current_user: User, db: AsyncIOMotorDatabase):
+    # Find transaction
+    transaction = await db.transactions.find_one({"id": transaction_id})
+    if not transaction:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+    
+    # Check if user is involved in transaction
+    if transaction["buyer_id"] != current_user.id and transaction["seller_id"] != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to access this transaction")
+    
+    # Get chat messages
+    messages = db.transaction_chats.find({"transaction_id": transaction_id}).sort("timestamp", 1)
+    
+    return await messages.to_list(length=1000)
