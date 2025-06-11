@@ -3,7 +3,11 @@ from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 import os
 import logging
+import sys
 from pathlib import Path
+
+# Add current directory to Python path
+sys.path.append(str(Path(__file__).parent))
 
 # Import configuration
 from src.config.database import client, get_database, close_mongo_connection
