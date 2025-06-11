@@ -261,21 +261,23 @@ function App() {
 
   return (
     <div className={`App transition-opacity duration-500 ${isPageLoaded ? 'opacity-100' : 'opacity-0'}`}>
-      <BrowserRouter>
-        <Navbar />
-        <main>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/buy-domain" element={<BuyPage />} />
-            <Route path="/sell-domain" element={<SellPage />} />
-            <Route path="/domain/:domainName" element={<DomainDetailPage />} />
-            <Route path="/search" element={<SearchResultsPage />} />
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
-        </main>
-        <Footer />
-        <CookieConsent />
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+          <Navbar />
+          <main>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/buy-domain" element={<BuyPage />} />
+              <Route path="/sell-domain" element={<SellPage />} />
+              <Route path="/domain/:domainName" element={<DomainDetailPage />} />
+              <Route path="/search" element={<SearchResultsPage />} />
+              <Route path="*" element={<NotFoundPage />} />
+            </Routes>
+          </main>
+          <Footer />
+          <CookieConsent />
+        </BrowserRouter>
+      </AuthProvider>
     </div>
   );
 }
