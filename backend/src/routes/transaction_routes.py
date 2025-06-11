@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from typing import List
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from ..models.transaction import Transaction, TransactionCreate
@@ -11,7 +11,8 @@ from ..controllers.transaction_controller import (
     add_transaction_chat_message,
     get_transaction_chat_messages
 )
-from ..middleware.auth import get_current_active_user
+from ..controllers.two_factor_controller import verify_two_factor, verify_backup_code
+from ..middleware.auth import get_current_active_user, require_2fa_verification
 from ..config.database import get_database
 from pydantic import BaseModel
 
@@ -24,6 +25,31 @@ class TransactionStatusUpdate(BaseModel):
 class ChatMessage(BaseModel):
     message: str
     sender_type: str = "user"  # user, bot, system
+
+class TransactionWith2FA(BaseModel):
+    domain_id: str
+    amount: float
+    payment_method: str = "escrow_transfer"
+    totp_code: str = None
+    backup_code: str = None
+
+async def verify_2fa_for_transaction(user: User, totp_code: str, backup_code: str, db):
+    """Verify 2FA for transaction if enabled"""
+    if await require_2fa_verification(user.id, db):
+        if totp_code:
+            is_valid = await verify_two_factor(user, totp_code, db)
+        elif backup_code:
+            is_valid = await verify_backup_code(user, backup_code, db)
+        else:
+            raise HTTPException(
+                status_code=400, 
+                detail="2FA verification required. Please provide TOTP code or backup code."
+            )
+        
+        if not is_valid:
+            raise HTTPException(status_code=400, detail="Invalid 2FA code")
+    
+    return True
 
 @router.post("", response_model=Transaction)
 async def purchase_domain(
