@@ -21,6 +21,7 @@ import PaymentTestPage from "./pages/PaymentTestPage";
 import DashboardPage from "./pages/DashboardPage";
 import MyDomainsPage from "./pages/MyDomainsPage";
 import ProfilePage from "./pages/ProfilePage";
+import APITestPage from "./pages/APITestPage";
 
 // API utilities
 import { domainAPI } from "./utils/api";
