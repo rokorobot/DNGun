@@ -1,10 +1,39 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import LoginModal from './LoginModal';
+import RegisterModal from './RegisterModal';
 
 const Navbar = () => {
   const [isLearnOpen, setIsLearnOpen] = useState(false);
   const [isCompanyOpen, setIsCompanyOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+  
+  const { isAuthenticated, user, logout } = useAuth();
+
+  const handleLoginClick = () => {
+    setIsLoginModalOpen(true);
+  };
+
+  const handleRegisterClick = () => {
+    setIsRegisterModalOpen(true);
+  };
+
+  const handleSwitchToRegister = () => {
+    setIsLoginModalOpen(false);
+    setIsRegisterModalOpen(true);
+  };
+
+  const handleSwitchToLogin = () => {
+    setIsRegisterModalOpen(false);
+    setIsLoginModalOpen(true);
+  };
+
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
     <nav className="bg-white border-b border-gray-100">
@@ -74,12 +103,50 @@ const Navbar = () => {
             </div>
           </div>
           <div className="flex items-center">
-            <button className="hidden lg:inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-teal mr-2">
-              Login
-            </button>
-            <button className="hidden lg:inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-accent-teal hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-teal">
-              Sign Up
-            </button>
+            {isAuthenticated ? (
+              <div className="hidden lg:flex items-center">
+                <Link to="/dashboard" className="text-sm font-medium text-gray-700 hover:text-accent-teal mr-4">
+                  Dashboard
+                </Link>
+                <div className="relative group">
+                  <button className="flex items-center text-sm font-medium text-gray-700 hover:text-accent-teal">
+                    <span className="mr-1">{user?.username || 'User'}</span>
+                    <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 hidden group-hover:block">
+                    <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-light-green">
+                      Profile
+                    </Link>
+                    <Link to="/my-domains" className="block px-4 py-2 text-sm text-gray-700 hover:bg-light-green">
+                      My Domains
+                    </Link>
+                    <button 
+                      onClick={handleLogout} 
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-light-green"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="hidden lg:flex items-center">
+                <button 
+                  onClick={handleLoginClick}
+                  className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-teal mr-2"
+                >
+                  Login
+                </button>
+                <button 
+                  onClick={handleRegisterClick}
+                  className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-accent-teal hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-teal"
+                >
+                  Sign Up
+                </button>
+              </div>
+            )}
             <div className="-mr-2 flex items-center lg:hidden">
               <button
                 type="button"
@@ -160,17 +227,59 @@ const Navbar = () => {
           <div className="pt-4 pb-3 border-t border-gray-200">
             <div className="flex items-center px-4">
               <div className="flex-shrink-0">
-                <button className="w-full flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-teal mb-2">
-                  Login
-                </button>
-                <button className="w-full flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-accent-teal hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-teal">
-                  Sign Up
-                </button>
+                {isAuthenticated ? (
+                  <div className="space-y-1">
+                    <Link to="/dashboard" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-accent-teal hover:text-gray-800">
+                      Dashboard
+                    </Link>
+                    <Link to="/profile" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-accent-teal hover:text-gray-800">
+                      Profile
+                    </Link>
+                    <Link to="/my-domains" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-accent-teal hover:text-gray-800">
+                      My Domains
+                    </Link>
+                    <button 
+                      onClick={handleLogout}
+                      className="w-full text-left block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-accent-teal hover:text-gray-800"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                ) : (
+                  <div>
+                    <button
+                      onClick={handleLoginClick}
+                      className="w-full flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-teal mb-2"
+                    >
+                      Login
+                    </button>
+                    <button
+                      onClick={handleRegisterClick}
+                      className="w-full flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-accent-teal hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-teal"
+                    >
+                      Sign Up
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </div>
       )}
+
+      {/* Login Modal */}
+      <LoginModal 
+        isOpen={isLoginModalOpen} 
+        onClose={() => setIsLoginModalOpen(false)} 
+        onSwitchToRegister={handleSwitchToRegister}
+      />
+
+      {/* Register Modal */}
+      <RegisterModal 
+        isOpen={isRegisterModalOpen} 
+        onClose={() => setIsRegisterModalOpen(false)} 
+        onSwitchToLogin={handleSwitchToLogin}
+      />
     </nav>
   );
 };
