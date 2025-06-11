@@ -1,30 +1,39 @@
 import React, { useState } from 'react';
 import TransactionStatus from './TransactionStatus';
-import { transactionBot } from '../utils/transactionBot';
+import { transactionAPI } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 
 const TransactionModal = ({ isOpen, onClose, domain, seller }) => {
-  const [transactionId, setTransactionId] = useState(null);
+  const [transaction, setTransaction] = useState(null);
   const [processingPayment, setProcessingPayment] = useState(false);
+  const [error, setError] = useState(null);
   const { user } = useAuth();
 
-  const handleInitiateTransaction = () => {
+  const handleInitiateTransaction = async () => {
     setProcessingPayment(true);
+    setError(null);
     
-    // Simulate payment processing delay
-    setTimeout(() => {
-      // Create a new transaction
-      const transaction = transactionBot.initiateTransaction(
-        domain.name,
-        { id: user?.id || 'guest', name: user?.username || 'Guest User', email: user?.email || 'guest@example.com' },
-        { id: seller?.id || domain.seller_id || 'seller', name: seller?.username || 'Seller', email: seller?.email || 'seller@example.com' },
-        domain.price,
-        'credit_card'
-      );
+    try {
+      // Create transaction via real backend API
+      const transactionData = {
+        domain_id: domain.id,
+        amount: domain.price,
+        payment_method: 'credit_card'
+      };
       
-      setTransactionId(transaction.id);
+      const newTransaction = await transactionAPI.createTransaction(transactionData);
+      setTransaction(newTransaction);
+      
+      // Simulate payment processing delay (in real app, this would be actual payment processing)
+      setTimeout(() => {
+        setProcessingPayment(false);
+      }, 2000);
+      
+    } catch (error) {
+      console.error('Error creating transaction:', error);
+      setError(error.response?.data?.detail || 'Failed to create transaction. Please try again.');
       setProcessingPayment(false);
-    }, 2000);
+    }
   };
 
   const handleTransactionComplete = () => {
@@ -35,6 +44,8 @@ const TransactionModal = ({ isOpen, onClose, domain, seller }) => {
   };
 
   if (!isOpen) return null;
+
+  const fullDomainName = domain.extension ? `${domain.name}${domain.extension}` : domain.name;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -51,15 +62,30 @@ const TransactionModal = ({ isOpen, onClose, domain, seller }) => {
           </button>
         </div>
         
-        {!transactionId ? (
+        {!transaction ? (
           <div>
+            {/* Error Message */}
+            {error && (
+              <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+                <div className="flex">
+                  <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                  <div className="ml-3">
+                    <h3 className="text-sm font-medium text-red-800">Transaction Error</h3>
+                    <p className="mt-1 text-sm text-red-700">{error}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="mb-6">
               <h3 className="text-xl font-semibold text-primary mb-4">Domain Information</h3>
               <div className="bg-light-green p-4 rounded-lg">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-gray-600">Domain Name</p>
-                    <p className="font-medium">{domain.name}</p>
+                    <p className="font-medium">{fullDomainName}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Price</p>
@@ -149,11 +175,11 @@ const TransactionModal = ({ isOpen, onClose, domain, seller }) => {
                 </div>
                 <div className="flex justify-between mb-2">
                   <span>Transaction Fee</span>
-                  <span>${(domain.price * 0.05).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+                  <span>${(domain.price * 0.10).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
                 </div>
                 <div className="flex justify-between font-bold border-t border-gray-300 pt-2 mt-2">
                   <span>Total</span>
-                  <span>${(domain.price * 1.05).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+                  <span>${(domain.price * 1.10).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
                 </div>
               </div>
             </div>
@@ -188,7 +214,7 @@ const TransactionModal = ({ isOpen, onClose, domain, seller }) => {
           </div>
         ) : (
           <TransactionStatus 
-            transactionId={transactionId}
+            transaction={transaction}
             onComplete={handleTransactionComplete}
           />
         )}
