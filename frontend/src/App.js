@@ -52,6 +52,8 @@ function App() {
               <Route path="/sell-domain" element={<SellPage />} />
               <Route path="/domain/:domainName" element={<DomainDetailPage />} />
               <Route path="/search" element={<SearchResultsPage />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/my-domains" element={<MyDomainsPage />} />
               <Route path="/payment/success" element={<PaymentSuccessPage />} />
               <Route path="/payment/test" element={<PaymentTestPage />} />
               <Route path="/test" element={<TestPage />} />
