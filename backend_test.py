@@ -253,39 +253,83 @@ def test_critical_issues():
         print("❌ Authentication failed, stopping tests")
         return 1
     
-    # Test user domains endpoint
-    print("\n🔍 Testing User Domains Endpoint...")
-    domains_success = tester.test_get_user_domains()
-    if domains_success:
-        print("✅ User domains endpoint is working")
-    else:
-        print("❌ User domains endpoint failed")
-    
-    # Test user transactions endpoint
-    print("\n🔍 Testing User Transactions Endpoint...")
-    transactions_success = tester.test_get_user_transactions()
-    if transactions_success:
-        print("✅ User transactions endpoint is working")
-    else:
-        print("❌ User transactions endpoint failed")
-    
     # Test getting all domains
     print("\n🔍 Testing Domain Retrieval...")
     domains_success = tester.test_get_all_domains()
     
-    if not tester.test_domain and domains_success:
-        print("⚠️ No domains returned from API, using hardcoded domain ID")
-        # Use a hardcoded domain ID for testing
-        domain_id = "170258b4-8250-4c2e-ae67-d32c694acd6f"  # Example domain ID
-    elif not domains_success:
-        print("❌ Failed to retrieve domains, using hardcoded domain ID")
-        domain_id = "170258b4-8250-4c2e-ae67-d32c694acd6f"  # Example domain ID
+    if domains_success:
+        # Check if all domains are available
+        all_domains_available = True
+        available_count = 0
+        total_domains = 0
+        
+        # Get all domains
+        _, domains = tester.run_test(
+            "Get All Domains",
+            "GET",
+            "domains",
+            200
+        )
+        
+        if isinstance(domains, list):
+            total_domains = len(domains)
+            for domain in domains:
+                if domain.get('status') == 'available':
+                    available_count += 1
+                else:
+                    all_domains_available = False
+                    print(f"⚠️ Domain {domain.get('name')}{domain.get('extension')} has status: {domain.get('status')}")
+            
+            print(f"✅ Domain status check: {available_count}/{total_domains} domains are available")
+            
+            if all_domains_available and total_domains > 0:
+                print("✅ All domains are set to 'available' status")
+            elif total_domains == 0:
+                print("⚠️ No domains found in the database")
+            else:
+                print("⚠️ Not all domains are set to 'available' status")
     else:
-        domain_id = tester.test_domain["id"]
-        print(f"✅ Using domain: {tester.test_domain.get('name')}{tester.test_domain.get('extension')} (ID: {domain_id})")
+        print("❌ Failed to retrieve domains")
     
-    # Test payment checkout
-    print("\n🔍 Testing Payment Checkout...")
+    # Test specific domains mentioned in the review request
+    test_domains = [
+        {"name": "webcreator", "extension": ".com"},
+        {"name": "shopease", "extension": ".com"},
+        {"name": "digitalspace", "extension": ".co"}
+    ]
+    
+    print("\n🔍 Testing Specific Domains...")
+    for domain in test_domains:
+        try:
+            success, domain_data = tester.run_test(
+                f"Get Domain {domain['name']}{domain['extension']}",
+                "GET",
+                f"domains/name/{domain['name']}/extension/{domain['extension']}",
+                200
+            )
+            
+            if success:
+                print(f"✅ Domain {domain['name']}{domain['extension']} exists")
+                print(f"   Status: {domain_data.get('status')}")
+                if domain_data.get('status') == 'available':
+                    print(f"   ✅ Domain is available for purchase")
+                else:
+                    print(f"   ⚠️ Domain is not available for purchase (status: {domain_data.get('status')})")
+            else:
+                print(f"❌ Failed to retrieve domain {domain['name']}{domain['extension']}")
+        except Exception as e:
+            print(f"❌ Error testing domain {domain['name']}{domain['extension']}: {str(e)}")
+    
+    # Test payment checkout for a specific domain
+    if tester.test_domain:
+        domain_id = tester.test_domain["id"]
+        domain_name = f"{tester.test_domain.get('name')}{tester.test_domain.get('extension')}"
+    else:
+        # Use a hardcoded domain ID if no test domain was found
+        domain_id = "170258b4-8250-4c2e-ae67-d32c694acd6f"
+        domain_name = "example.com"
+    
+    print(f"\n🔍 Testing Payment Checkout for {domain_name}...")
     checkout_success, checkout_response = tester.test_payment_checkout(domain_id)
     if checkout_success:
         print("✅ Payment checkout endpoint is working")
