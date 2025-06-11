@@ -50,8 +50,16 @@ export const authAPI = {
   },
   
   register: async (userData) => {
-    const response = await api.post('/auth/register', userData);
-    return response.data;
+    console.log('API register called with:', userData);
+    console.log('Full API URL:', api.defaults.baseURL + '/auth/register');
+    try {
+      const response = await api.post('/auth/register', userData);
+      console.log('API register success:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('API register error:', error.response || error);
+      throw error;
+    }
   },
   
   getCurrentUser: async () => {
