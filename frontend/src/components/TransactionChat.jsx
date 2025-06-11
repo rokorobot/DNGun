@@ -403,6 +403,101 @@ You'll receive an email notification when it's time to transfer the domain.`,
     );
   };
 
+  const handlePushComplete = () => {
+    addUserMessage("Domain push has been completed.");
+    
+    addBotMessage(
+      `🔍 Verifying domain push...
+
+Checking domain ownership in our system...`,
+      [],
+      2000
+    );
+
+    setTimeout(() => {
+      addBotMessage(
+        `✅ Domain push verified successfully!
+
+The domain "${transaction.domain?.name}${transaction.domain?.extension}" is now in DNGun's possession.
+
+💰 Releasing payment to seller...
+
+Preparing final transfer to buyer...`,
+        [],
+        3000
+      );
+
+      setTimeout(() => {
+        getBuyerRegistryInfo();
+      }, 2000);
+    }, 4000);
+  };
+
+  const handleBuyerUsernameRequest = () => {
+    setAwaitingResponse([{ type: 'buyer_username_input', label: 'Enter Username' }]);
+    addUserMessage("I'll provide my registry username.");
+    
+    const registry = getRegistryFromDomain(transaction.domain?.extension);
+    
+    addBotMessage(
+      `👤 Please enter your ${registry} username:
+
+This should be the username you use to log into your ${registry} account where you want to receive the domain.
+
+**Important:** Make sure the username is correct - we'll push the domain directly to this account.`,
+      [{ type: 'buyer_username_input', label: 'Enter Username' }],
+      1000
+    );
+  };
+
+  const handlePreferTransfer = () => {
+    addUserMessage("I prefer domain transfer to a different registrar.");
+    
+    addBotMessage(
+      `📤 Transfer option selected.
+
+Please note:
+• Transfer process takes 5-7 business days
+• Domain will be transferred to DNGun's preferred registrar first
+• Then we'll initiate transfer to your preferred registrar
+• Additional transfer fees may apply
+
+If you still prefer this option, please provide your preferred registrar details.`,
+      [
+        { type: 'provide_transfer_details', label: '📋 Provide Transfer Details' },
+        { type: 'change_to_push', label: '🚀 Change to Push (Faster)' }
+      ],
+      2000
+    );
+  };
+
+  const handleCompleteTransaction = () => {
+    addBotMessage(
+      `🎉 **TRANSACTION COMPLETED SUCCESSFULLY!**
+
+**Summary:**
+✅ Payment received: $${transaction.amount?.toLocaleString()}
+✅ Domain transferred to DNGun: ${transaction.domain?.name}${transaction.domain?.extension}
+✅ Payment released to seller
+✅ Domain transferred to buyer account
+
+**What happens next:**
+• Buyer: Check your registry account - domain should appear within 5-10 minutes
+• Seller: Payment will be processed to your account within 1-2 business days
+• Both parties will receive email confirmations
+
+Thank you for using DNGun's secure escrow service! 🛡️
+
+**Transaction ID:** ${transaction.id}
+**Support:** If you need any assistance, contact support@dngun.com`,
+      [
+        { type: 'download_receipt', label: '📄 Download Receipt' },
+        { type: 'close_chat', label: '✅ Close Chat' }
+      ],
+      3000
+    );
+  };
+
   const handlePaymentHelp = () => {
     addUserMessage("I need help with the payment process.");
     
