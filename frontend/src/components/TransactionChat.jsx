@@ -277,8 +277,13 @@ Which option would you prefer?`,
   const handleDomainPush = () => {
     addUserMessage("I'll push the domain to the marketplace account (same registrar).");
     
-    // Get registry information
+    // Get registry information and requirements
     const registry = getRegistryFromDomain(transaction.domain?.extension);
+    const pushReqs = getPushRequirements(registry);
+    
+    const lockStatusMessage = pushReqs.unlockRequired 
+      ? "🔓 **Must be unlocked** (required by " + registry + ")"
+      : "🔒 **Can remain locked** (allowed by " + registry + ")";
     
     addBotMessage(
       `🚀 Perfect! **Push is the fastest option** (same registrar transfer).
@@ -286,28 +291,27 @@ Which option would you prefer?`,
 **📋 PUSH Process Details:**
 • **Registry:** ${registry}
 • **Auth Code:** ❌ Not required
-• **Domain Lock:** 🔒 **Depends on ${registry} policy** - some allow locked, others require unlock
+• **Domain Lock:** ${lockStatusMessage}
 • **Process:** Internal account ownership change
 
 **🎯 Instructions:**
 1. Log into your ${registry} account
 2. Go to Domain Management → Push Domain
-3. **Check if domain needs to be unlocked** (varies by registrar)
-4. Push "${transaction.domain?.name}${transaction.domain?.extension}" to our marketplace account:
+${pushReqs.unlockRequired ? '3. **Unlock the domain first** (required by ' + registry + ')\n4.' : '3.'} Push "${transaction.domain?.name}${transaction.domain?.extension}" to our marketplace account:
    
    **Marketplace Username:** dngun_marketplace_${registry.toLowerCase()}
 
-5. The receiving user (DNGun) will automatically accept the push
+${pushReqs.unlockRequired ? '5.' : '4.'} The receiving user (DNGun) will automatically accept the push
 
 **⏱️ Timeline:** Usually completes within 5-10 minutes
 
-**💡 Note:** If push fails due to lock status, try unlocking the domain first.
+**💡 ${registry} Note:** ${pushReqs.notes}
 
 Once the push is completed, please confirm below.`,
       [
         { type: 'confirm_push_complete', label: '✅ Domain push completed' },
         { type: 'push_help', label: '❓ Need help with push process' },
-        { type: 'unlock_for_push', label: '🔓 Domain push failed - need to unlock' }
+        ...(pushReqs.unlockRequired ? [{ type: 'unlock_for_push', label: '🔓 Help with unlocking' }] : [])
       ],
       2000
     );
