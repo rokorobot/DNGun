@@ -294,17 +294,19 @@ Which option would you prefer?`,
 • **Domain Lock:** ${lockStatusMessage}
 • **Process:** Internal account ownership change
 
-**🎯 Instructions:**
+**🎯 Detailed ${registry} Instructions:**
 1. Log into your ${registry} account
-2. Go to Domain Management → Push Domain
+2. Navigate to: **${pushReqs.pushPath}**
 ${pushReqs.unlockRequired ? '3. **Unlock the domain first** (required by ' + registry + ')\n4.' : '3.'} Push "${transaction.domain?.name}${transaction.domain?.extension}" to our marketplace account:
    
-   **Marketplace Username:** dngun_marketplace_${registry.toLowerCase()}
+   **🏢 DNGun Marketplace Username:** \`${pushReqs.marketplaceUsername}\`
+   
+   **⚠️ Important:** Use the exact username above - case sensitive!
 
-${pushReqs.unlockRequired ? '5.' : '4.'} The receiving user (DNGun) will automatically accept the push
+${pushReqs.unlockRequired ? '5.' : '4.'} Confirm the push request
+${pushReqs.unlockRequired ? '6.' : '5.'} DNGun will automatically accept the push
 
 **⏱️ Timeline:** Usually completes within 5-10 minutes
-
 **💡 ${registry} Note:** ${pushReqs.notes}
 
 Once the push is completed, please confirm below.`,
