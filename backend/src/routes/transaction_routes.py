@@ -17,7 +17,7 @@ router = APIRouter(prefix="/transactions", tags=["Transactions"])
 async def purchase_domain(
     transaction_data: TransactionCreate,
     current_user: User = Depends(get_current_active_user),
-    db: AsyncIOMotorDatabase = Depends(get_database)
+    db = Depends(get_database)
 ):
     return await create_transaction(transaction_data, current_user, db)
 
@@ -25,13 +25,13 @@ async def purchase_domain(
 async def finalize_transaction(
     transaction_id: str,
     current_user: User = Depends(get_current_active_user),
-    db: AsyncIOMotorDatabase = Depends(get_database)
+    db = Depends(get_database)
 ):
     return await complete_transaction(transaction_id, current_user, db)
 
 @router.get("", response_model=List[Transaction])
 async def get_transactions(
     current_user: User = Depends(get_current_active_user),
-    db: AsyncIOMotorDatabase = Depends(get_database)
+    db = Depends(get_database)
 ):
     return await get_user_transactions(current_user, db)

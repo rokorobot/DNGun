@@ -19,7 +19,7 @@ router = APIRouter(prefix="/domains", tags=["Domains"])
 async def add_domain(
     domain_data: DomainCreate, 
     current_user: User = Depends(get_current_active_user),
-    db: AsyncIOMotorDatabase = Depends(get_database)
+    db = Depends(get_database)
 ):
     return await create_domain(domain_data, current_user, db)
 
@@ -30,21 +30,21 @@ async def list_domains(
     price_min: Optional[float] = Query(None, ge=0),
     price_max: Optional[float] = Query(None, ge=0),
     search: Optional[str] = None,
-    db: AsyncIOMotorDatabase = Depends(get_database)
+    db = Depends(get_database)
 ):
     return await get_all_domains(category, status, price_min, price_max, search, db)
 
 @router.get("/search", response_model=List[Domain])
 async def search_domain(
     q: str,
-    db: AsyncIOMotorDatabase = Depends(get_database)
+    db = Depends(get_database)
 ):
     return await search_domains(q, db)
 
 @router.get("/{domain_id}", response_model=Domain)
 async def get_domain(
     domain_id: str,
-    db: AsyncIOMotorDatabase = Depends(get_database)
+    db = Depends(get_database)
 ):
     return await get_domain_by_id(domain_id, db)
 
@@ -52,6 +52,6 @@ async def get_domain(
 async def get_domain_by_full_name(
     name: str,
     extension: str,
-    db: AsyncIOMotorDatabase = Depends(get_database)
+    db = Depends(get_database)
 ):
     return await get_domain_by_name(name, extension, db)

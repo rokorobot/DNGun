@@ -23,7 +23,7 @@ async def get_current_user_info(
 @router.get("/me/domains", response_model=List[Domain])
 async def get_my_domains(
     current_user: User = Depends(get_current_active_user),
-    db: AsyncIOMotorDatabase = Depends(get_database)
+    db = Depends(get_database)
 ):
     # Get domains owned by the user
     domains_cursor = db.domains.find({
@@ -39,7 +39,7 @@ async def get_my_domains(
 @router.get("/me/domains/selling", response_model=List[Domain])
 async def get_domains_for_sale(
     current_user: User = Depends(get_current_active_user),
-    db: AsyncIOMotorDatabase = Depends(get_database)
+    db = Depends(get_database)
 ):
     # Get domains listed for sale by the user
     domains_cursor = db.domains.find({
@@ -52,7 +52,7 @@ async def get_domains_for_sale(
 @router.get("/me/domains/owned", response_model=List[Domain])
 async def get_domains_owned(
     current_user: User = Depends(get_current_active_user),
-    db: AsyncIOMotorDatabase = Depends(get_database)
+    db = Depends(get_database)
 ):
     # Get domains owned by the user
     domains_cursor = db.domains.find({
