@@ -11,7 +11,7 @@ const DomainDetailPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState('buy');
   const [paymentOption, setPaymentOption] = useState('full');
-  const [showTransactionModal, setShowTransactionModal] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const { user } = useAuth();
   
   useEffect(() => {
