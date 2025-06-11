@@ -196,6 +196,63 @@ export const transactionAPI = {
   },
 };
 
+// Two-Factor Authentication API
+export const authAPI = {
+  // Setup 2FA
+  async setup2FA() {
+    const response = await axios.post(`${API_BASE_URL}/auth/2fa/setup`);
+    return response.data;
+  },
+
+  // Enable 2FA
+  async enable2FA(totpCode) {
+    const response = await axios.post(`${API_BASE_URL}/auth/2fa/enable`, {
+      totp_code: totpCode
+    });
+    return response.data;
+  },
+
+  // Verify 2FA code
+  async verify2FA(totpCode) {
+    const response = await axios.post(`${API_BASE_URL}/auth/2fa/verify`, {
+      totp_code: totpCode
+    });
+    return response.data;
+  },
+
+  // Verify backup code
+  async verifyBackupCode(backupCode) {
+    const response = await axios.post(`${API_BASE_URL}/auth/2fa/verify-backup`, {
+      backup_code: backupCode
+    });
+    return response.data;
+  },
+
+  // Disable 2FA
+  async disable2FA(password, totpCode = null, backupCode = null) {
+    const response = await axios.post(`${API_BASE_URL}/auth/2fa/disable`, {
+      password,
+      totp_code: totpCode,
+      backup_code: backupCode
+    });
+    return response.data;
+  },
+
+  // Get 2FA status
+  async get2FAStatus() {
+    const response = await axios.get(`${API_BASE_URL}/auth/2fa/status`);
+    return response.data;
+  },
+
+  // Regenerate backup codes
+  async regenerateBackupCodes(totpCode) {
+    const response = await axios.post(`${API_BASE_URL}/auth/2fa/regenerate-backup-codes`, {
+      totp_code: totpCode
+    });
+    return response.data;
+  }
+};
+
 // User API methods
 export const userAPI = {
   getUserDomains: async () => {
