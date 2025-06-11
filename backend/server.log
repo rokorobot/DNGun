@@ -12,3 +12,8 @@ INFO:     Waiting for application shutdown.
 2025-06-11 01:08:36,628 - server - INFO - Closing MongoDB connection...
 INFO:     Application shutdown complete.
 INFO:     Finished server process [218]
+INFO:     Started server process [701]
+INFO:     Waiting for application startup.
+2025-06-11 01:08:38,751 - server - INFO - Connecting to MongoDB...
+INFO:     Application startup complete.
+INFO:     127.0.0.1:51578 - "GET /test HTTP/1.1" 200 OK
