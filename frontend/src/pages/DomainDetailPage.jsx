@@ -518,9 +518,9 @@ const DomainDetailPage = () => {
         </div>
       </section>
 
-      {/* Transaction Modal */}
+      {/* Enhanced Transaction Modal */}
       {showTransactionModal && (
-        <TransactionModal
+        <EnhancedTransactionModal
           isOpen={showTransactionModal}
           onClose={() => setShowTransactionModal(false)}
           domain={domain}
