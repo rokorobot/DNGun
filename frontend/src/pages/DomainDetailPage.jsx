@@ -518,13 +518,20 @@ const DomainDetailPage = () => {
         </div>
       </section>
 
-      {/* Enhanced Transaction Modal */}
+      {/* Stripe Payment Modal */}
       {showPaymentModal && (
-        <EnhancedTransactionModal
+        <StripePaymentModal
           isOpen={showPaymentModal}
           onClose={() => setShowPaymentModal(false)}
           domain={domain}
-          seller={{ id: domain.seller_id, username: 'Domain Seller', email: 'seller@example.com' }}
+          onPaymentSuccess={() => {
+            setShowPaymentModal(false);
+            // Payment success will be handled by redirect to success page
+          }}
+          onPaymentError={(error) => {
+            console.error('Payment error:', error);
+            // Keep modal open, error will be displayed in modal
+          }}
         />
       )}
     </div>
