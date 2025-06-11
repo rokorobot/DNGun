@@ -5,6 +5,7 @@ from ..models.transaction import Transaction, TransactionCreate
 from ..models.user import User
 from ..config.database import get_database
 from datetime import datetime
+import uuid
 
 async def create_transaction(
     transaction_data: TransactionCreate, 
