@@ -831,5 +831,62 @@ def test_stripe_payment_integration_enhanced():
     
     return 0 if tester.tests_passed == tester.tests_run else 1
 
+def test_domain_loading():
+    """Test the domain loading functionality"""
+    # Get backend URL from environment
+    backend_url = os.environ.get('REACT_APP_BACKEND_URL', 'https://fe2a4b0f-3203-46bc-b0cf-2cc736b736fd.preview.emergentagent.com')
+    
+    print("\n🔍 TESTING DOMAIN LOADING FUNCTIONALITY\n")
+    print(f"Backend URL: {backend_url}")
+    
+    # Setup tester with explicit /api prefix
+    tester = DNGunAPITester(f"{backend_url}/api")
+    
+    # Test root endpoint
+    tester.test_root_endpoint()
+    
+    # Test getting all domains
+    print("\n🔍 Testing Domain Retrieval...")
+    domains_success = tester.test_get_all_domains()
+    
+    if domains_success:
+        if len(tester.test_domain) > 0:
+            print(f"✅ Successfully retrieved domains from API")
+            print(f"✅ Sample domain: {tester.test_domain.get('name')}{tester.test_domain.get('extension')}")
+        else:
+            print("⚠️ Retrieved domains but the list is empty")
+    else:
+        print("❌ Failed to retrieve domains from API")
+    
+    # Test domain search
+    if domains_success and tester.test_domain:
+        # Use the first few characters of a domain name for search
+        search_term = tester.test_domain.get('name')[:3]
+        print(f"\n🔍 Testing Domain Search with term: '{search_term}'...")
+        search_success = tester.test_search_domains(search_term)
+        
+        if search_success:
+            print(f"✅ Domain search functionality is working")
+        else:
+            print(f"❌ Domain search functionality failed")
+    
+    # Test getting domain by name
+    if domains_success and tester.test_domain:
+        domain_name = tester.test_domain.get('name')
+        domain_extension = tester.test_domain.get('extension')
+        
+        print(f"\n🔍 Testing Get Domain by Name: '{domain_name}{domain_extension}'...")
+        name_success = tester.test_get_domain_by_name(domain_name, domain_extension)
+        
+        if name_success:
+            print(f"✅ Get domain by name functionality is working")
+        else:
+            print(f"❌ Get domain by name functionality failed")
+    
+    # Print results
+    print(f"\n📊 Domain loading tests passed: {tester.tests_passed}/{tester.tests_run}")
+    
+    return 0 if tester.tests_passed == tester.tests_run else 1
+
 if __name__ == "__main__":
     sys.exit(test_stripe_payment_integration_enhanced())
