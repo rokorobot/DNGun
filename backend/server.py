@@ -18,6 +18,7 @@ from src.routes.domain_routes import router as domain_router
 from src.routes.transaction_routes import router as transaction_router
 from src.routes.user_routes import router as user_router
 from src.routes.two_factor_routes import router as two_factor_router
+from src.routes.payment_routes import router as payment_router
 
 # Load environment variables
 ROOT_DIR = Path(__file__).parent
