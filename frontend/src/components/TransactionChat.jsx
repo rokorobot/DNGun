@@ -207,6 +207,9 @@ Once set up, return here to continue.`,
       case 'change_to_push':
         handleChangeToPush();
         break;
+      case 'unlock_for_push':
+        handleUnlockForPush();
+        break;
       default:
         console.log('Unknown action:', action);
     }
