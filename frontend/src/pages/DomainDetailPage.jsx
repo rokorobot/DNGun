@@ -411,8 +411,29 @@ const DomainDetailPage = () => {
                 
                 <div className="p-6">
                   <div className="mb-4">
-                    <h3 className="text-lg font-semibold text-primary">{domain.name}{domain.extension}</h3>
-                    <p className="text-gray-500 capitalize">{domain.category} Domain</p>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="text-lg font-semibold text-primary">{domain.name}{domain.extension}</h3>
+                        <p className="text-gray-500 capitalize">{domain.category} Domain</p>
+                      </div>
+                      <div>
+                        {domain.status === 'available' && (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            Available
+                          </span>
+                        )}
+                        {domain.status === 'pending' && (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            Available
+                          </span>
+                        )}
+                        {domain.status === 'sold' && (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            Sold
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </div>
                   
                   <div className="border-t border-gray-200 pt-4 mb-4">
