@@ -744,6 +744,32 @@ Let me guide you through the Push process instead...`,
     }, 3000);
   };
 
+  const handleUnlockForPush = () => {
+    addUserMessage("The domain push failed - I need to unlock it first.");
+    
+    const registry = getRegistryFromDomain(transaction.domain?.extension);
+    
+    addBotMessage(
+      `🔓 Some registrars require domains to be unlocked before pushing.
+
+Quick steps to unlock in ${registry}:
+1. Log into your ${registry} account
+2. Go to Domain Management
+3. Find "${transaction.domain?.name}${transaction.domain?.extension}"
+4. Look for "Domain Lock" or "Transfer Lock" setting
+5. Toggle the lock to "Disabled" or "Off"
+6. Save changes
+7. Wait 5-10 minutes for changes to take effect
+
+Once unlocked, try the push process again.`,
+      [
+        { type: 'confirm_push_complete', label: '✅ Domain unlocked and pushed' },
+        { type: 'push_help', label: '❓ Need more help' }
+      ],
+      2000
+    );
+  };
+
   const formatTimestamp = (timestamp) => {
     return timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
