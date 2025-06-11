@@ -206,5 +206,7 @@ async def get_transaction_chat_messages(transaction_id: str, current_user: User,
     
     # Get chat messages
     messages = db.transaction_chats.find({"transaction_id": transaction_id}).sort("timestamp", 1)
+    message_list = await messages.to_list(length=1000)
     
-    return await messages.to_list(length=1000)
+    # Serialize all messages
+    return [serialize_mongo_doc(message) for message in message_list]
