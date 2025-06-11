@@ -18,6 +18,8 @@ import NotFoundPage from "./pages/NotFoundPage";
 import TestPage from "./pages/TestPage";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 import PaymentTestPage from "./pages/PaymentTestPage";
+import DashboardPage from "./pages/DashboardPage";
+import MyDomainsPage from "./pages/MyDomainsPage";
 
 // API utilities
 import { domainAPI } from "./utils/api";
