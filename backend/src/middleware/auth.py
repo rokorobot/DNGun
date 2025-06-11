@@ -2,11 +2,12 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from ..utils.security import decode_token
 from ..models.user import User
+from ..config.database import get_database
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/token")
 
-async def get_current_user(token: str = Depends(oauth2_scheme), db = None):
+async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncIOMotorDatabase = Depends(get_database)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
