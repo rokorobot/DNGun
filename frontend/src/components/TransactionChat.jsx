@@ -192,6 +192,18 @@ Once set up, return here to continue.`,
       case 'confirm_push_username':
         handlePushUsernameConfirmation();
         break;
+      case 'confirm_push_complete':
+        handlePushComplete();
+        break;
+      case 'provide_buyer_username':
+        handleBuyerUsernameRequest();
+        break;
+      case 'prefer_transfer':
+        handlePreferTransfer();
+        break;
+      case 'complete_transaction':
+        handleCompleteTransaction();
+        break;
       default:
         console.log('Unknown action:', action);
     }
