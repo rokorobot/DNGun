@@ -130,7 +130,7 @@ async def complete_transaction(
     
     # Get updated transaction
     updated_transaction = await db.transactions.find_one({"id": transaction_id})
-    return Transaction(**updated_transaction)
+    return Transaction(**serialize_mongo_doc(updated_transaction))
 
 async def get_user_transactions(current_user: User, db):
     # Get transactions where user is buyer or seller
