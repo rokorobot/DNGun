@@ -15,6 +15,7 @@ import SellPage from "./pages/SellPage";
 import DomainDetailPage from "./pages/DomainDetailPage";
 import SearchResultsPage from "./pages/SearchResultsPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import TestPage from "./pages/TestPage";
 
 // API utilities
 import { domainAPI } from "./utils/api";
@@ -23,7 +24,7 @@ import { domainAPI } from "./utils/api";
 import { AuthProvider } from "./context/AuthContext";
 
 // Set axios defaults
-axios.defaults.baseURL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000/api';
+axios.defaults.baseURL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8002/api';
 
 function App() {
   const [isPageLoaded, setIsPageLoaded] = useState(false);
