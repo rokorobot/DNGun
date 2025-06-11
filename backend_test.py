@@ -383,6 +383,131 @@ def test_buyer_seller_interaction():
     print(f"📊 Total tests passed: {total_passed}/{total_tests}")
     return 0 if total_passed == total_tests else 1
 
+def test_payment_integration():
+    """Test the Stripe payment integration"""
+    # Get backend URL from environment
+    backend_url = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001/api')
+    
+    print("\n🔍 TESTING STRIPE PAYMENT INTEGRATION\n")
+    print(f"Backend URL: {backend_url}")
+    
+    # Setup tester
+    tester = DNGunAPITester(backend_url)
+    
+    # Test root endpoint
+    tester.test_root_endpoint()
+    
+    # Test authentication
+    if not tester.test_login("admin@dngun.com", "admin123"):
+        print("❌ Login failed, but continuing with tests...")
+    
+    # Test user info
+    tester.test_get_current_user()
+    
+    # Test getting available domains
+    tester.test_get_all_domains()
+    
+    if not tester.test_domain:
+        print("❌ No domain available for testing, stopping payment tests")
+        return 1
+    
+    # Test payment endpoints
+    print("\n🔍 Testing Payment Endpoints...")
+    
+    # Test creating checkout session
+    checkout_data = {
+        "domain_id": tester.test_domain["id"],
+        "domain_name": f"{tester.test_domain['name']}{tester.test_domain['extension']}",
+        "origin_url": "http://localhost:3000",
+        "currency": "usd",
+        "metadata": {
+            "test": "true",
+            "timestamp": datetime.now().isoformat()
+        }
+    }
+    
+    success, response = tester.run_test(
+        "Create Checkout Session",
+        "POST",
+        "payments/checkout/domain",
+        200,
+        data=checkout_data
+    )
+    
+    if success and 'session_id' in response:
+        session_id = response['session_id']
+        print(f"✅ Created checkout session: {session_id}")
+        print(f"✅ Checkout URL: {response['checkout_url']}")
+        
+        # Test checking payment status
+        success, status_response = tester.run_test(
+            "Check Payment Status",
+            "GET",
+            f"payments/status/{session_id}",
+            200
+        )
+        
+        if success and 'payment_status' in status_response:
+            print(f"✅ Payment status: {status_response['payment_status']}")
+            print(f"✅ Stripe payment status: {status_response['stripe_payment_status']}")
+        
+        # Test payment history
+        success, history_response = tester.run_test(
+            "Get Payment History",
+            "GET",
+            "payments/history",
+            200
+        )
+        
+        if success:
+            print(f"✅ Retrieved payment history with {len(history_response)} entries")
+    
+    # Test unauthenticated checkout
+    # Save token temporarily and clear it
+    temp_token = tester.token
+    tester.token = None
+    
+    success, response = tester.run_test(
+        "Unauthenticated Checkout",
+        "POST",
+        "payments/checkout/domain",
+        200,  # Should still work without auth
+        data=checkout_data
+    )
+    
+    # Restore token
+    tester.token = temp_token
+    
+    if success and 'session_id' in response:
+        print(f"✅ Created unauthenticated checkout session: {response['session_id']}")
+    
+    # Test invalid domain checkout
+    import uuid
+    invalid_domain_id = str(uuid.uuid4())
+    
+    invalid_checkout_data = {
+        "domain_id": invalid_domain_id,
+        "domain_name": "invalid-domain.com",
+        "origin_url": "http://localhost:3000",
+        "currency": "usd"
+    }
+    
+    success, response = tester.run_test(
+        "Invalid Domain Checkout",
+        "POST",
+        "payments/checkout/domain",
+        404,  # Should return 404 Not Found
+        data=invalid_checkout_data
+    )
+    
+    if not success:
+        print("✅ Correctly handled invalid domain checkout")
+    
+    # Print results
+    print(f"\n📊 Payment tests passed: {tester.tests_passed}/{tester.tests_run}")
+    
+    return 0 if tester.tests_passed == tester.tests_run else 1
+
 def main():
     # Get backend URL from environment
     backend_url = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001/api')
@@ -435,7 +560,13 @@ def main():
     print("\n🔄 Testing Buyer-Seller Interaction...")
     interaction_result = test_buyer_seller_interaction()
     
-    return 0 if tester.tests_passed == tester.tests_run and interaction_result == 0 else 1
+    # Test payment integration
+    print("\n🔄 Testing Payment Integration...")
+    payment_result = test_payment_integration()
+    
+    return 0 if (tester.tests_passed == tester.tests_run and 
+                 interaction_result == 0 and 
+                 payment_result == 0) else 1
 
 if __name__ == "__main__":
     sys.exit(main())
