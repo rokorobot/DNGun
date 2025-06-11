@@ -22,17 +22,61 @@ const TransactionModal = ({ isOpen, onClose, domain, seller }) => {
       };
       
       const newTransaction = await transactionAPI.createTransaction(transactionData);
-      setTransaction(newTransaction);
       
       // Simulate payment processing delay (in real app, this would be actual payment processing)
       setTimeout(() => {
+        setTransaction(newTransaction);
         setProcessingPayment(false);
+        
+        // Start the automated transaction progression similar to Dan.com
+        simulateTransactionFlow(newTransaction);
       }, 2000);
       
     } catch (error) {
       console.error('Error creating transaction:', error);
       setError(error.response?.data?.detail || 'Failed to create transaction. Please try again.');
       setProcessingPayment(false);
+    }
+  };
+
+  // Simulate Dan.com-like transaction progression
+  const simulateTransactionFlow = (initialTransaction) => {
+    let currentTransaction = { ...initialTransaction };
+    
+    // Step 1: Processing (after payment)
+    setTimeout(() => {
+      currentTransaction = { ...currentTransaction, status: 'processing' };
+      setTransaction({ ...currentTransaction });
+    }, 1000);
+    
+    // Step 2: Transfer initiated
+    setTimeout(() => {
+      currentTransaction = { ...currentTransaction, status: 'transfer_initiated' };
+      setTransaction({ ...currentTransaction });
+    }, 3000);
+    
+    // Step 3: Transfer in progress
+    setTimeout(() => {
+      currentTransaction = { ...currentTransaction, status: 'transfer_in_progress' };
+      setTransaction({ ...currentTransaction });
+    }, 5000);
+    
+    // Step 4: Transfer completed
+    setTimeout(() => {
+      currentTransaction = { ...currentTransaction, status: 'completed' };
+      setTransaction({ ...currentTransaction });
+      
+      // Update backend transaction status (in real app, this would be done by backend services)
+      updateBackendTransaction(currentTransaction.id, 'completed');
+    }, 8000);
+  };
+
+  // Update backend transaction status
+  const updateBackendTransaction = async (transactionId, status) => {
+    try {
+      await transactionAPI.completeTransaction(transactionId);
+    } catch (error) {
+      console.error('Error updating backend transaction:', error);
     }
   };
 
@@ -216,6 +260,7 @@ const TransactionModal = ({ isOpen, onClose, domain, seller }) => {
           <TransactionStatus 
             transaction={transaction}
             onComplete={handleTransactionComplete}
+            domain={domain}
           />
         )}
       </div>
