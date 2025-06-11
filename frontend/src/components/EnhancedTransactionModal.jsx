@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import TransactionChat from './TransactionChat';
-import { transactionAPI } from '../utils/api';
+import TwoFactorVerification from './TwoFactorVerification';
+import { transactionAPI, authAPI } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 
 const EnhancedTransactionModal = ({ isOpen, onClose, domain, seller }) => {
