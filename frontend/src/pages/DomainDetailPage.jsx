@@ -78,7 +78,7 @@ const DomainDetailPage = () => {
       alert('Please log in to purchase a domain');
       return;
     }
-    setShowTransactionModal(true);
+    setShowPaymentModal(true);
   };
 
   if (isLoading) {
