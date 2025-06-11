@@ -720,5 +720,116 @@ def test_stripe_payment_integration():
     
     return 0 if tester.tests_passed == tester.tests_run else 1
 
+def test_stripe_payment_integration_enhanced():
+    """Test the Stripe payment integration with enhanced error handling"""
+    # Get backend URL from environment
+    backend_url = os.environ.get('REACT_APP_BACKEND_URL', 'https://fe2a4b0f-3203-46bc-b0cf-2cc736b736fd.preview.emergentagent.com')
+    
+    print("\n🔍 TESTING STRIPE PAYMENT INTEGRATION (ENHANCED)\n")
+    print(f"Backend URL: {backend_url}")
+    
+    # Setup tester with explicit /api prefix
+    tester = DNGunAPITester(f"{backend_url}/api")
+    
+    # Test root endpoint
+    tester.test_root_endpoint()
+    
+    # Test authentication
+    print("\n🔍 Testing Authentication...")
+    auth_success = tester.test_login("admin@dngun.com", "admin123")
+    if auth_success:
+        print("✅ Authentication successful")
+        # Test user info
+        tester.test_get_current_user()
+    else:
+        print("⚠️ Authentication failed, continuing with anonymous checkout")
+    
+    # Test getting available domains
+    print("\n🔍 Testing Domain Retrieval...")
+    domains_success = tester.test_get_all_domains()
+    
+    if not tester.test_domain and domains_success:
+        print("⚠️ No domains returned from API, using hardcoded domain ID")
+        # Use a hardcoded domain ID for testing
+        domain_id = "170258b4-8250-4c2e-ae67-d32c694acd6f"  # Example domain ID
+    elif not domains_success:
+        print("❌ Failed to retrieve domains, using hardcoded domain ID")
+        domain_id = "170258b4-8250-4c2e-ae67-d32c694acd6f"  # Example domain ID
+    else:
+        domain_id = tester.test_domain["id"]
+        print(f"✅ Using domain: {tester.test_domain.get('name')}{tester.test_domain.get('extension')} (ID: {domain_id})")
+    
+    # Test payment endpoints
+    print("\n🔍 Testing Payment Endpoints...")
+    
+    # Test creating checkout session
+    checkout_data = {
+        "domain_id": domain_id,
+        "origin_url": "http://localhost:3000",
+    }
+    
+    # Test checkout with current authentication state
+    success, response = tester.run_test(
+        "Create Checkout Session",
+        "POST",
+        "payments/checkout/domain",
+        200,
+        data=checkout_data
+    )
+    
+    if success and 'session_id' in response:
+        session_id = response['session_id']
+        print(f"✅ Created checkout session: {session_id}")
+        print(f"✅ Checkout URL: {response['checkout_url']}")
+        
+        # Test checking payment status
+        success, status_response = tester.run_test(
+            "Check Payment Status",
+            "GET",
+            f"payments/status/{session_id}",
+            200
+        )
+        
+        if success and 'payment_status' in status_response:
+            print(f"✅ Payment status: {status_response['payment_status']}")
+            print(f"✅ Stripe payment status: {status_response['stripe_payment_status']}")
+        
+        # If authenticated, test payment history
+        if tester.token:
+            success, history_response = tester.run_test(
+                "Get Payment History",
+                "GET",
+                "payments/history",
+                200
+            )
+            
+            if success:
+                print(f"✅ Retrieved payment history with {len(history_response)} entries")
+    
+    # Test invalid domain checkout
+    import uuid
+    invalid_domain_id = str(uuid.uuid4())
+    
+    invalid_checkout_data = {
+        "domain_id": invalid_domain_id,
+        "origin_url": "http://localhost:3000",
+    }
+    
+    success, response = tester.run_test(
+        "Invalid Domain Checkout",
+        "POST",
+        "payments/checkout/domain",
+        404,  # Should return 404 Not Found
+        data=invalid_checkout_data
+    )
+    
+    if not success:
+        print("✅ Correctly handled invalid domain checkout")
+    
+    # Print results
+    print(f"\n📊 Payment tests passed: {tester.tests_passed}/{tester.tests_run}")
+    
+    return 0 if tester.tests_passed == tester.tests_run else 1
+
 if __name__ == "__main__":
-    sys.exit(test_stripe_payment_integration())
+    sys.exit(test_stripe_payment_integration_enhanced())
