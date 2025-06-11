@@ -343,9 +343,21 @@ Are you ready to provide the authorization code?`,
     addUserMessage("I'm ready to provide the authorization code.");
     
     addBotMessage(
-      `🔑 Please enter the authorization code (EPP code) for the domain:
+      `🔑 **Authorization Code (EPP Code) Required**
 
-The code should be 8-16 characters long and may contain letters and numbers.`,
+Please enter the authorization code for "${transaction.domain?.name}${transaction.domain?.extension}":
+
+**📋 Auth Code Requirements:**
+• 8-16 characters long
+• Contains letters and numbers
+• Case-sensitive
+• Must be from your current registrar
+
+**💡 Where to find it:**
+• Registrar Control Panel → Domain Management → Auth Code/EPP Code
+• Some registrars email it separately
+
+**⚠️ Important:** Make sure the domain is unlocked before providing the code.`,
       [{ type: 'auth_code_input', label: 'Enter Auth Code' }],
       1000
     );
