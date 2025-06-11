@@ -16,6 +16,7 @@ import DomainDetailPage from "./pages/DomainDetailPage";
 import SearchResultsPage from "./pages/SearchResultsPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import TestPage from "./pages/TestPage";
+import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 
 // API utilities
 import { domainAPI } from "./utils/api";
