@@ -6,7 +6,7 @@ from ..models.user import User, UserCreate, UserPublic
 from ..utils.security import verify_password, get_password_hash, create_access_token
 from ..config.database import get_database
 
-async def register_user(user_data: UserCreate, db: AsyncIOMotorDatabase = Depends(get_database)):
+async def register_user(user_data: UserCreate, db):
     # Check if user already exists
     existing_user = await db.users.find_one({"email": user_data.email})
     if existing_user:
