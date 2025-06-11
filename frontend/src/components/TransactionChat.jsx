@@ -621,22 +621,34 @@ I'm here to help with your domain transaction. Please use the action buttons for
     setAwaitingResponse(null);
     
     addBotMessage(
-      `🔑 Authorization code received: ${authCode}
+      `🔑 **Authorization code received:** ${authCode}
 
-Initiating domain transfer to DNGun's registrar...
+**📤 Initiating domain transfer process...**
 
-This process may take 5-7 business days. I'll keep you updated on the progress.`,
+**Transfer Details:**
+• Domain: ${transaction.domain?.name}${transaction.domain?.extension}
+• From: Your current registrar
+• To: DNGun's preferred registrar
+• Auth Code: ${authCode}
+
+**⏱️ Transfer Timeline:**
+• Day 1: Transfer initiated
+• Day 2-3: Current registrar review
+• Day 4-5: ICANN approval process
+• Day 6-7: Transfer completion
+
+I'll keep you updated on the progress. The transfer should complete within 5-7 business days.`,
       [],
       2000
     );
 
-    // Simulate transfer progress
+    // Simulate transfer progress updates
     setTimeout(() => {
       addBotMessage(
-        `📤 Transfer initiated successfully!
+        `📤 **Transfer Update:** Transfer successfully initiated!
 
-Transfer status: In Progress
-Expected completion: 5-7 business days
+Current Status: Pending approval from your current registrar
+Next Step: Awaiting confirmation (usually 1-2 days)
 
 I'll notify both parties once the domain is successfully transferred to DNGun.`,
         [],
