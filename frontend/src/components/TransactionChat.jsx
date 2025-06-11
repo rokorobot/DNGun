@@ -201,8 +201,11 @@ Once set up, return here to continue.`,
       case 'prefer_transfer':
         handlePreferTransfer();
         break;
-      case 'complete_transaction':
-        handleCompleteTransaction();
+      case 'unlock_help':
+        handleUnlockHelp();
+        break;
+      case 'change_to_push':
+        handleChangeToPush();
         break;
       default:
         console.log('Unknown action:', action);
