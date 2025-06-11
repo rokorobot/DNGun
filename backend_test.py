@@ -651,8 +651,8 @@ def test_stripe_payment_integration():
     print("\n🔍 TESTING STRIPE PAYMENT INTEGRATION\n")
     print(f"Backend URL: {backend_url}")
     
-    # Setup tester
-    tester = DNGunAPITester(backend_url)
+    # Setup tester with explicit /api prefix
+    tester = DNGunAPITester(f"{backend_url}/api")
     
     # Test root endpoint
     tester.test_root_endpoint()
