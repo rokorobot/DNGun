@@ -8,20 +8,63 @@ const EnhancedTransactionModal = ({ isOpen, onClose, domain, seller }) => {
   const [transaction, setTransaction] = useState(null);
   const [processingPayment, setProcessingPayment] = useState(false);
   const [error, setError] = useState(null);
-  const [currentStep, setCurrentStep] = useState('payment'); // payment, chat, completed
+  const [currentStep, setCurrentStep] = useState('payment'); // payment, 2fa, chat, completed
+  const [requires2FA, setRequires2FA] = useState(false);
+  const [show2FAVerification, setShow2FAVerification] = useState(false);
   const { user } = useAuth();
 
+  // Check if user has 2FA enabled
+  React.useEffect(() => {
+    const check2FAStatus = async () => {
+      if (user) {
+        try {
+          const status = await authAPI.get2FAStatus();
+          setRequires2FA(status.is_enabled);
+        } catch (error) {
+          console.error('Error checking 2FA status:', error);
+        }
+      }
+    };
+    
+    if (isOpen) {
+      check2FAStatus();
+    }
+  }, [user, isOpen]);
+
   const handleInitiateTransaction = async () => {
+    if (requires2FA) {
+      setShow2FAVerification(true);
+      return;
+    }
+    
+    await processTransaction();
+  };
+
+  const handle2FASuccess = async (verificationCode) => {
+    setShow2FAVerification(false);
+    await processTransaction(verificationCode);
+  };
+
+  const processTransaction = async (verificationCode = null) => {
     setProcessingPayment(true);
     setError(null);
     
     try {
-      // Create transaction via real backend API
+      // Create transaction via real backend API with 2FA if needed
       const transactionData = {
         domain_id: domain.id,
         amount: domain.price,
         payment_method: 'escrow_transfer'
       };
+      
+      // Add 2FA verification if required
+      if (requires2FA && verificationCode) {
+        if (verificationCode.includes('-')) {
+          transactionData.backup_code = verificationCode;
+        } else {
+          transactionData.totp_code = verificationCode;
+        }
+      }
       
       const newTransaction = await transactionAPI.createTransaction(transactionData);
       
