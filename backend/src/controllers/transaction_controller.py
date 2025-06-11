@@ -9,7 +9,7 @@ from datetime import datetime
 async def create_transaction(
     transaction_data: TransactionCreate, 
     current_user: User, 
-    db: AsyncIOMotorDatabase = Depends(get_database)
+    db
 ):
     # Check if domain exists
     domain = await db.domains.find_one({"id": transaction_data.domain_id})
@@ -60,7 +60,7 @@ async def create_transaction(
 async def complete_transaction(
     transaction_id: str, 
     current_user: User, 
-    db: AsyncIOMotorDatabase = Depends(get_database)
+    db
 ):
     # Get transaction
     transaction_data = await db.transactions.find_one({"id": transaction_id})
@@ -115,7 +115,7 @@ async def complete_transaction(
     updated_transaction = await db.transactions.find_one({"id": transaction_id})
     return Transaction(**updated_transaction)
 
-async def get_user_transactions(current_user: User, db: AsyncIOMotorDatabase = Depends(get_database)):
+async def get_user_transactions(current_user: User, db):
     # Get transactions where user is buyer or seller
     transactions_cursor = db.transactions.find({
         "$or": [

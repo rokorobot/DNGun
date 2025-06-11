@@ -235,3 +235,13 @@ Traceback (most recent call last):
     raise fastapi.exceptions.FastAPIError(
 fastapi.exceptions.FastAPIError: Invalid args for response field! Hint: check that <class 'motor.motor_asyncio.AsyncIOMotorDatabase'> is a valid Pydantic field type. If you are using a return type annotation that is not a valid Pydantic field (e.g. Union[Response, dict, None]) you can disable generating the response model from the type annotation with the path operation decorator parameter response_model=None. Read more: https://fastapi.tiangolo.com/tutorial/response-model/
 WARNING:  StatReload detected changes in 'src/middleware/auth.py'. Reloading...
+INFO:     Started server process [2053]
+INFO:     Waiting for application startup.
+2025-06-11 00:15:00,523 - server - INFO - Connecting to MongoDB...
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'src/controllers/domain_controller.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-06-11 00:15:38,645 - server - INFO - Closing MongoDB connection...
+INFO:     Application shutdown complete.
+INFO:     Finished server process [2053]

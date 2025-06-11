@@ -6,7 +6,7 @@ from ..models.user import User
 from ..config.database import get_database
 from datetime import datetime
 
-async def create_domain(domain_data: DomainCreate, current_user: User, db: AsyncIOMotorDatabase = Depends(get_database)):
+async def create_domain(domain_data: DomainCreate, current_user: User, db):
     # Check if domain already exists
     existing_domain = await db.domains.find_one({"name": domain_data.name, "extension": domain_data.extension})
     if existing_domain:
@@ -42,7 +42,7 @@ async def get_all_domains(
     price_min: Optional[float] = None,
     price_max: Optional[float] = None,
     search_query: Optional[str] = None,
-    db: AsyncIOMotorDatabase = Depends(get_database)
+    db = None
 ):
     # Build query
     query = {}
@@ -70,7 +70,7 @@ async def get_all_domains(
     
     return [Domain(**domain) for domain in domains]
 
-async def get_domain_by_id(domain_id: str, db: AsyncIOMotorDatabase = Depends(get_database)):
+async def get_domain_by_id(domain_id: str, db):
     domain_data = await db.domains.find_one({"id": domain_id})
     if not domain_data:
         raise HTTPException(
@@ -87,7 +87,7 @@ async def get_domain_by_id(domain_id: str, db: AsyncIOMotorDatabase = Depends(ge
     domain_data = await db.domains.find_one({"id": domain_id})
     return Domain(**domain_data)
 
-async def get_domain_by_name(name: str, extension: str, db: AsyncIOMotorDatabase = Depends(get_database)):
+async def get_domain_by_name(name: str, extension: str, db):
     domain_data = await db.domains.find_one({
         "name": name.lower(),
         "extension": extension.lower()
@@ -108,7 +108,7 @@ async def get_domain_by_name(name: str, extension: str, db: AsyncIOMotorDatabase
     domain_data = await db.domains.find_one({"id": domain_data["id"]})
     return Domain(**domain_data)
 
-async def search_domains(query: str, db: AsyncIOMotorDatabase = Depends(get_database)):
+async def search_domains(query: str, db):
     # Search for exact matches first
     domains = []
     
