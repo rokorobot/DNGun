@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import SearchBar from '../components/SearchBar';
 import CategoryCard from '../components/CategoryCard';
 import DomainCard from '../components/DomainCard';
-import { domainCategories, featuredDomains } from '../data/domains';
+import { domainCategories } from '../data/domains';
+import { domainAPI } from '../utils/api';
 
 const HeroIllustration = () => (
   <div className="w-full md:w-1/2 px-4 mt-10 md:mt-0 relative animate-float">
@@ -40,6 +41,29 @@ const HeroIllustration = () => (
 );
 
 const HomePage = () => {
+  const [featuredDomains, setFeaturedDomains] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFeaturedDomains = async () => {
+      try {
+        setIsLoading(true);
+        const domains = await domainAPI.getAllDomains();
+        // Filter featured domains from the API response
+        const featured = domains.filter(domain => domain.featured).slice(0, 6);
+        setFeaturedDomains(featured);
+      } catch (error) {
+        console.error('Error fetching featured domains:', error);
+        // Fallback to empty array or show error message
+        setFeaturedDomains([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchFeaturedDomains();
+  }, []);
+
   return (
     <div>
       {/* Hero Section */}
@@ -106,11 +130,17 @@ const HomePage = () => {
             </a>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredDomains.map(domain => (
-              <DomainCard key={domain.id} domain={domain} />
-            ))}
-          </div>
+          {isLoading ? (
+            <div className="flex justify-center items-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent-teal"></div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {featuredDomains.map(domain => (
+                <DomainCard key={domain.id} domain={domain} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -204,7 +234,7 @@ const HomePage = () => {
                 </div>
               </div>
               <p className="text-gray-600">
-                "Dan.com made selling my domain portfolio easy and profitable. Their platform provides great visibility to potential buyers."
+                "DNGun.com made selling my domain portfolio easy and profitable. Their platform provides great visibility to potential buyers."
               </p>
               <div className="mt-4 flex text-accent-teal">
                 ★★★★★

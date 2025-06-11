@@ -1,13 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SearchBar from '../components/SearchBar';
 import DomainCard from '../components/DomainCard';
-import { allDomains, domainCategories } from '../data/domains';
+import { domainCategories } from '../data/domains';
+import { domainAPI } from '../utils/api';
 
 const BuyPage = () => {
-  const [filteredDomains, setFilteredDomains] = useState(allDomains);
+  const [allDomains, setAllDomains] = useState([]);
+  const [filteredDomains, setFilteredDomains] = useState([]);
   const [activeFilter, setActiveFilter] = useState('all');
   const [sortOption, setSortOption] = useState('featured');
   const [priceRange, setPriceRange] = useState([0, 20000]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDomains = async () => {
+      try {
+        setIsLoading(true);
+        const domains = await domainAPI.getAllDomains();
+        setAllDomains(domains);
+        setFilteredDomains(domains);
+      } catch (error) {
+        console.error('Error fetching domains:', error);
+        setAllDomains([]);
+        setFilteredDomains([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDomains();
+  }, []);
 
   const handleFilterChange = (filter) => {
     setActiveFilter(filter);
@@ -51,7 +73,9 @@ const BuyPage = () => {
     setPriceRange(newPriceRange);
     
     const filtered = allDomains.filter(domain => {
-      return domain.price >= newPriceRange[0] && domain.price <= newPriceRange[1];
+      const matchesCategory = activeFilter === 'all' || domain.category === activeFilter;
+      const matchesPrice = domain.price >= newPriceRange[0] && domain.price <= newPriceRange[1];
+      return matchesCategory && matchesPrice;
     });
     
     setFilteredDomains(filtered);
@@ -131,7 +155,7 @@ const BuyPage = () => {
                       <input
                         type="range"
                         min="1000"
-                        max="20000"
+                        max="30000"
                         step="500"
                         value={priceRange[1]}
                         onChange={(e) => handlePriceRangeChange(e, 1)}
@@ -175,7 +199,7 @@ const BuyPage = () => {
               {/* Sort and Results Info */}
               <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
                 <p className="text-gray-600 mb-4 sm:mb-0">
-                  Showing <span className="font-semibold">{filteredDomains.length}</span> domains
+                  {isLoading ? 'Loading...' : `Showing ${filteredDomains.length} domains`}
                 </p>
                 <div className="flex items-center">
                   <label htmlFor="sort" className="mr-2 text-gray-600">Sort by:</label>
@@ -193,67 +217,76 @@ const BuyPage = () => {
                 </div>
               </div>
               
-              {/* Domain Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredDomains.map(domain => (
-                  <DomainCard key={domain.id} domain={domain} />
-                ))}
-              </div>
-
-              {/* Empty State */}
-              {filteredDomains.length === 0 && (
-                <div className="text-center py-12">
-                  <div className="w-16 h-16 bg-light-green rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-accent-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+              {/* Loading State */}
+              {isLoading ? (
+                <div className="flex justify-center items-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent-teal"></div>
+                </div>
+              ) : (
+                <>
+                  {/* Domain Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredDomains.map(domain => (
+                      <DomainCard key={domain.id} domain={domain} />
+                    ))}
                   </div>
-                  <h3 className="text-xl font-semibold text-primary mb-2">No domains found</h3>
-                  <p className="text-gray-600 max-w-md mx-auto">
-                    Try adjusting your filters or search criteria to find domains that match your needs.
-                  </p>
-                </div>
-              )}
 
-              {/* Pagination (could be expanded with real functionality) */}
-              {filteredDomains.length > 0 && (
-                <div className="mt-8 flex justify-center">
-                  <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                    <a href="#" className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                      <span className="sr-only">Previous</span>
-                      <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                        <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                    </a>
-                    <a href="#" aria-current="page" className="z-10 bg-accent-teal border-accent-teal text-white relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                      1
-                    </a>
-                    <a href="#" className="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                      2
-                    </a>
-                    <a href="#" className="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                      3
-                    </a>
-                    <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
-                      ...
-                    </span>
-                    <a href="#" className="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                      8
-                    </a>
-                    <a href="#" className="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                      9
-                    </a>
-                    <a href="#" className="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                      10
-                    </a>
-                    <a href="#" className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                      <span className="sr-only">Next</span>
-                      <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                        <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                      </svg>
-                    </a>
-                  </nav>
-                </div>
+                  {/* Empty State */}
+                  {filteredDomains.length === 0 && (
+                    <div className="text-center py-12">
+                      <div className="w-16 h-16 bg-light-green rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-accent-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-xl font-semibold text-primary mb-2">No domains found</h3>
+                      <p className="text-gray-600 max-w-md mx-auto">
+                        Try adjusting your filters or search criteria to find domains that match your needs.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Pagination (could be expanded with real functionality) */}
+                  {filteredDomains.length > 0 && (
+                    <div className="mt-8 flex justify-center">
+                      <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                        <a href="#" className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                          <span className="sr-only">Previous</span>
+                          <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        </a>
+                        <a href="#" aria-current="page" className="z-10 bg-accent-teal border-accent-teal text-white relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                          1
+                        </a>
+                        <a href="#" className="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                          2
+                        </a>
+                        <a href="#" className="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                          3
+                        </a>
+                        <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                          ...
+                        </span>
+                        <a href="#" className="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                          8
+                        </a>
+                        <a href="#" className="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                          9
+                        </a>
+                        <a href="#" className="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                          10
+                        </a>
+                        <a href="#" className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                          <span className="sr-only">Next</span>
+                          <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                          </svg>
+                        </a>
+                      </nav>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
