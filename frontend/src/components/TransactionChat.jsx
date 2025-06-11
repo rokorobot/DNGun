@@ -667,6 +667,52 @@ The domain "${transaction.domain?.name}${transaction.domain?.extension}" has bee
     }, 4000);
   };
 
+  const handleUnlockHelp = () => {
+    addUserMessage("I need help unlocking my domain.");
+    
+    addBotMessage(
+      `🔓 Domain Unlock Instructions:
+
+1. Log into your registrar account
+2. Go to Domain Management
+3. Find "${transaction.domain?.name}${transaction.domain?.extension}"
+4. Look for "Domain Lock" or "Transfer Lock" setting
+5. Toggle the lock to "Disabled" or "Off"
+6. Save changes
+
+Note: It may take up to 24 hours for unlock to take effect.
+
+Need the Auth Code (EPP) after unlocking?`,
+      [
+        { type: 'provide_auth_code', label: '🔑 Yes, provide Auth Code' },
+        { type: 'change_to_push', label: '🚀 Switch to Push instead' }
+      ],
+      2000
+    );
+  };
+
+  const handleChangeToPush = () => {
+    addUserMessage("I'd like to switch to the Push method instead.");
+    
+    addBotMessage(
+      `🚀 Great choice! Push transfer is much faster.
+
+The Push method:
+• Completes in 5-10 minutes
+• No domain unlocking required
+• No auth codes needed
+• Same registrar transfer
+
+Let me guide you through the Push process instead...`,
+      [],
+      2000
+    );
+
+    setTimeout(() => {
+      handleDomainPush();
+    }, 3000);
+  };
+
   const formatTimestamp = (timestamp) => {
     return timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
