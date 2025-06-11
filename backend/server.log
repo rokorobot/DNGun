@@ -19,3 +19,9 @@ INFO:     Application startup complete.
 INFO:     127.0.0.1:51578 - "GET /test HTTP/1.1" 200 OK
 INFO:     127.0.0.1:49104 - "GET /test HTTP/1.1" 200 OK
 INFO:     127.0.0.1:49112 - "GET /test HTTP/1.1" 200 OK
+WARNING:  StatReload detected changes in 'server.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-06-11 01:10:09,945 - server - INFO - Closing MongoDB connection...
+INFO:     Application shutdown complete.
+INFO:     Finished server process [701]
