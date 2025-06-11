@@ -53,11 +53,26 @@ async def verify_2fa_for_transaction(user: User, totp_code: str, backup_code: st
 
 @router.post("", response_model=Transaction)
 async def purchase_domain(
-    transaction_data: TransactionCreate,
+    transaction_data: TransactionWith2FA,
     current_user: User = Depends(get_current_active_user),
     db = Depends(get_database)
 ):
-    return await create_transaction(transaction_data, current_user, db)
+    # Verify 2FA if enabled
+    await verify_2fa_for_transaction(
+        current_user, 
+        transaction_data.totp_code, 
+        transaction_data.backup_code, 
+        db
+    )
+    
+    # Create the transaction
+    transaction_create = TransactionCreate(
+        domain_id=transaction_data.domain_id,
+        amount=transaction_data.amount,
+        payment_method=transaction_data.payment_method
+    )
+    
+    return await create_transaction(transaction_create, current_user, db)
 
 @router.put("/{transaction_id}/complete", response_model=Transaction)
 async def finalize_transaction(
