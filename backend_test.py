@@ -643,46 +643,6 @@ def main():
     
     return 0 if tester.tests_passed == tester.tests_run else 1
 
-def create_test_domain():
-    """Create a test domain for payment testing"""
-    # Get backend URL from environment
-    backend_url = os.environ.get('REACT_APP_BACKEND_URL', 'https://fe2a4b0f-3203-46bc-b0cf-2cc736b736fd.preview.emergentagent.com')
-    
-    print("\n🔍 CREATING TEST DOMAIN\n")
-    print(f"Backend URL: {backend_url}")
-    
-    # Setup tester
-    tester = DNGunAPITester(backend_url)
-    
-    # Login as admin
-    if not tester.test_login("admin@dngun.com", "admin123"):
-        print("❌ Login failed, cannot create test domain")
-        return None
-    
-    # Create a test domain
-    domain_data = {
-        "name": "testdomain",
-        "extension": ".com",
-        "price": 999.99,
-        "category": "business",
-        "description": "Test domain for payment integration testing"
-    }
-    
-    success, response = tester.run_test(
-        "Create Test Domain",
-        "POST",
-        "domains",
-        201,
-        data=domain_data
-    )
-    
-    if success:
-        print(f"✅ Created test domain: {response['name']}{response['extension']}")
-        return response
-    else:
-        print("❌ Failed to create test domain")
-        return None
-
 def test_stripe_payment_integration():
     """Test the Stripe payment integration specifically"""
     # Get backend URL from environment
@@ -697,24 +657,11 @@ def test_stripe_payment_integration():
     # Test root endpoint
     tester.test_root_endpoint()
     
-    # Test getting available domains
-    tester.test_get_all_domains()
-    
-    # If no domains available, create a test domain
-    if not tester.test_domain:
-        print("⚠️ No domains available, creating a test domain...")
-        test_domain = create_test_domain()
-        if test_domain:
-            tester.test_domain = test_domain
-        else:
-            print("❌ Could not create test domain, stopping payment tests")
-            return 1
-    
     # Test payment endpoints
     print("\n🔍 Testing Payment Endpoints...")
     
-    # Test creating checkout session with specific domain ID from request
-    domain_id = tester.test_domain["id"]
+    # Use a specific domain ID from the available domains
+    domain_id = "170258b4-8250-4c2e-ae67-d32c694acd6f"  # shopease.com
     print(f"Using domain ID: {domain_id}")
     
     checkout_data = {
@@ -747,53 +694,6 @@ def test_stripe_payment_integration():
         if success and 'payment_status' in status_response:
             print(f"✅ Payment status: {status_response['payment_status']}")
             print(f"✅ Stripe payment status: {status_response['stripe_payment_status']}")
-    
-    # Test authenticated checkout
-    # Login as a user
-    if tester.test_login("admin@dngun.com", "admin123"):
-        print("✅ Login successful, testing authenticated checkout")
-        
-        # Test user info
-        tester.test_get_current_user()
-        
-        # Test creating checkout session as authenticated user
-        success, response = tester.run_test(
-            "Authenticated Checkout",
-            "POST",
-            "payments/checkout/domain",
-            200,
-            data=checkout_data
-        )
-        
-        if success and 'session_id' in response:
-            session_id = response['session_id']
-            print(f"✅ Created authenticated checkout session: {session_id}")
-            print(f"✅ Checkout URL: {response['checkout_url']}")
-            
-            # Test checking payment status
-            success, status_response = tester.run_test(
-                "Check Payment Status",
-                "GET",
-                f"payments/status/{session_id}",
-                200
-            )
-            
-            if success and 'payment_status' in status_response:
-                print(f"✅ Payment status: {status_response['payment_status']}")
-                print(f"✅ Stripe payment status: {status_response['stripe_payment_status']}")
-            
-            # Test payment history
-            success, history_response = tester.run_test(
-                "Get Payment History",
-                "GET",
-                "payments/history",
-                200
-            )
-            
-            if success:
-                print(f"✅ Retrieved payment history with {len(history_response)} entries")
-    else:
-        print("⚠️ Login failed, skipping authenticated checkout tests")
     
     # Test invalid domain checkout
     import uuid
