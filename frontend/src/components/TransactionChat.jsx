@@ -593,32 +593,70 @@ Still need help?`,
       '.com': 'Namecheap',
       '.net': 'Namecheap', 
       '.org': 'Namecheap',
+      '.info': 'Namecheap',
+      '.biz': 'Namecheap',
       '.io': 'Namesilo',
-      '.co': 'GoDaddy'
+      '.co': 'GoDaddy',
+      '.me': 'GoDaddy',
+      '.tv': 'GoDaddy',
+      '.cc': 'Dynadot',
+      '.ws': 'Dynadot',
+      '.app': 'Porkbun',
+      '.dev': 'Porkbun',
+      '.xyz': 'Porkbun',
+      '.online': 'Sav',
+      '.store': 'Sav',
+      '.tech': 'Sav'
     };
     return registryMap[extension] || 'Namecheap';
   };
 
-  // Get registrar-specific push requirements
+  // Get registrar-specific push requirements and DNGun marketplace accounts
   const getPushRequirements = (registry) => {
     const requirements = {
       'Namecheap': {
         unlockRequired: false,
-        notes: 'Domains can usually be pushed while locked'
+        notes: 'Domains can usually be pushed while locked',
+        marketplaceUsername: 'dngun_marketplace',
+        pushPath: 'Domain List → Manage → Transfer → Push Domain'
       },
       'GoDaddy': {
         unlockRequired: true,
-        notes: 'Domains must be unlocked before pushing'
+        notes: 'Domains must be unlocked before pushing',
+        marketplaceUsername: 'dngun_escrow',
+        pushPath: 'My Products → Domains → Manage → Transfer to Another GoDaddy Account'
       },
       'Namesilo': {
         unlockRequired: true,
-        notes: 'Domains must be unlocked for account changes'
+        notes: 'Domains must be unlocked for account changes',
+        marketplaceUsername: 'dngun_marketplace',
+        pushPath: 'Domain Manager → Change Account'
+      },
+      'Dynadot': {
+        unlockRequired: false,
+        notes: 'Push available for unlocked domains',
+        marketplaceUsername: 'dngun_marketplace',
+        pushPath: 'My Domains → Push Domain'
+      },
+      'Porkbun': {
+        unlockRequired: true,
+        notes: 'Domain must be unlocked for account transfer',
+        marketplaceUsername: 'dngun_marketplace',
+        pushPath: 'Domain Management → Transfer to Another Porkbun Account'
+      },
+      'Sav': {
+        unlockRequired: false,
+        notes: 'Internal transfers usually allowed while locked',
+        marketplaceUsername: 'dngun_marketplace',
+        pushPath: 'Domain Management → Change Ownership'
       }
     };
     
     return requirements[registry] || {
       unlockRequired: true,
-      notes: 'Check your registrar policy - unlock may be required'
+      notes: 'Check your registrar policy - unlock may be required',
+      marketplaceUsername: 'dngun_marketplace',
+      pushPath: 'Domain Management → Transfer/Push Domain'
     };
   };
 
