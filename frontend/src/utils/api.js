@@ -152,6 +152,39 @@ export const transactionAPI = {
     const response = await api.put(`/transactions/${id}/complete`);
     return response.data;
   },
+
+  updateTransactionStatus: async (id, status, message = null) => {
+    if (USE_MOCK_API) {
+      return mockTransactionAPI.updateTransactionStatus(id, status);
+    }
+    
+    const response = await api.put(`/transactions/${id}/status`, {
+      status,
+      message
+    });
+    return response.data;
+  },
+
+  addTransactionChatMessage: async (id, message, senderType = 'user') => {
+    if (USE_MOCK_API) {
+      return mockTransactionAPI.addTransactionChatMessage(id, message, senderType);
+    }
+    
+    const response = await api.post(`/transactions/${id}/chat`, {
+      message,
+      sender_type: senderType
+    });
+    return response.data;
+  },
+
+  getTransactionChatMessages: async (id) => {
+    if (USE_MOCK_API) {
+      return mockTransactionAPI.getTransactionChatMessages(id);
+    }
+    
+    const response = await api.get(`/transactions/${id}/chat`);
+    return response.data;
+  },
   
   getUserTransactions: async () => {
     if (USE_MOCK_API) {
