@@ -83,6 +83,60 @@ export const authAPI = {
     const response = await api.get('/users/me');
     return response.data;
   },
+
+  // Setup 2FA
+  setup2FA: async () => {
+    const response = await api.post('/auth/2fa/setup');
+    return response.data;
+  },
+
+  // Enable 2FA
+  enable2FA: async (totpCode) => {
+    const response = await api.post('/auth/2fa/enable', {
+      totp_code: totpCode
+    });
+    return response.data;
+  },
+
+  // Verify 2FA code
+  verify2FA: async (totpCode) => {
+    const response = await api.post('/auth/2fa/verify', {
+      totp_code: totpCode
+    });
+    return response.data;
+  },
+
+  // Verify backup code
+  verifyBackupCode: async (backupCode) => {
+    const response = await api.post('/auth/2fa/verify-backup', {
+      backup_code: backupCode
+    });
+    return response.data;
+  },
+
+  // Disable 2FA
+  disable2FA: async (password, totpCode = null, backupCode = null) => {
+    const response = await api.post('/auth/2fa/disable', {
+      password,
+      totp_code: totpCode,
+      backup_code: backupCode
+    });
+    return response.data;
+  },
+
+  // Get 2FA status
+  get2FAStatus: async () => {
+    const response = await api.get('/auth/2fa/status');
+    return response.data;
+  },
+
+  // Regenerate backup codes
+  regenerateBackupCodes: async (totpCode) => {
+    const response = await api.post('/auth/2fa/regenerate-backup-codes', {
+      totp_code: totpCode
+    });
+    return response.data;
+  }
 };
 
 // Domain API methods
