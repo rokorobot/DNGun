@@ -59,10 +59,14 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       setError(null);
       
+      console.log('Registering user with data:', userData);
+      console.log('API URL for registration:', process.env.REACT_APP_BACKEND_URL + '/auth/register');
+      
       const response = await authAPI.register(userData);
+      console.log('Registration response:', response);
       return response;
     } catch (err) {
-      console.error('Registration error:', err);
+      console.error('Registration error details:', err);
       const errorMessage = err.response?.data?.detail || 'Registration failed. Please try again.';
       setError(errorMessage);
       throw new Error(errorMessage);
