@@ -541,6 +541,17 @@ Still need help?`,
 
   const handleSendMessage = () => {
     if (inputMessage.trim()) {
+      // Check if we're expecting specific input
+      if (awaitingResponse && awaitingResponse[0]?.type === 'auth_code_input') {
+        handleAuthCodeSubmission(inputMessage.trim());
+        return;
+      }
+      
+      if (awaitingResponse && awaitingResponse[0]?.type === 'buyer_username_input') {
+        handleBuyerUsernameSubmission(inputMessage.trim());
+        return;
+      }
+      
       addUserMessage(inputMessage);
       
       // Auto-respond to general messages
@@ -554,6 +565,69 @@ I'm here to help with your domain transaction. Please use the action buttons for
         );
       }, 1000);
     }
+  };
+
+  const handleAuthCodeSubmission = (authCode) => {
+    addUserMessage(`Authorization code: ${authCode}`);
+    setAwaitingResponse(null);
+    
+    addBotMessage(
+      `🔑 Authorization code received: ${authCode}
+
+Initiating domain transfer to DNGun's registrar...
+
+This process may take 5-7 business days. I'll keep you updated on the progress.`,
+      [],
+      2000
+    );
+
+    // Simulate transfer progress
+    setTimeout(() => {
+      addBotMessage(
+        `📤 Transfer initiated successfully!
+
+Transfer status: In Progress
+Expected completion: 5-7 business days
+
+I'll notify both parties once the domain is successfully transferred to DNGun.`,
+        [],
+        3000
+      );
+    }, 3000);
+  };
+
+  const handleBuyerUsernameSubmission = (username) => {
+    addUserMessage(`My registry username: ${username}`);
+    setAwaitingResponse(null);
+    
+    const registry = getRegistryFromDomain(transaction.domain?.extension);
+    
+    addBotMessage(
+      `👤 Username received: ${username}
+
+Initiating domain push to your ${registry} account...
+
+Please check your ${registry} account in 5-10 minutes.`,
+      [],
+      2000
+    );
+
+    // Simulate push completion
+    setTimeout(() => {
+      addBotMessage(
+        `✅ Domain push completed!
+
+The domain "${transaction.domain?.name}${transaction.domain?.extension}" has been successfully pushed to your ${registry} account (${username}).
+
+💰 Payment has been released to the seller.
+
+🎉 Transaction completed successfully!`,
+        [
+          { type: 'complete_transaction', label: '🎉 View Transaction Summary' }
+        ],
+        3000
+      );
+    }, 4000);
   };
 
   const formatTimestamp = (timestamp) => {
