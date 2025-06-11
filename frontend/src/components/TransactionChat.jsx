@@ -590,9 +590,32 @@ Still need help?`,
       '.net': 'Namecheap', 
       '.org': 'Namecheap',
       '.io': 'Namesilo',
-      '.co': 'Godaddy'
+      '.co': 'GoDaddy'
     };
     return registryMap[extension] || 'Namecheap';
+  };
+
+  // Get registrar-specific push requirements
+  const getPushRequirements = (registry) => {
+    const requirements = {
+      'Namecheap': {
+        unlockRequired: false,
+        notes: 'Domains can usually be pushed while locked'
+      },
+      'GoDaddy': {
+        unlockRequired: true,
+        notes: 'Domains must be unlocked before pushing'
+      },
+      'Namesilo': {
+        unlockRequired: true,
+        notes: 'Domains must be unlocked for account changes'
+      }
+    };
+    
+    return requirements[registry] || {
+      unlockRequired: true,
+      notes: 'Check your registrar policy - unlock may be required'
+    };
   };
 
   const handleSendMessage = () => {
