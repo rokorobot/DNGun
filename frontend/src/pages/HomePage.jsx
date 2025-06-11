@@ -43,18 +43,32 @@ const HeroIllustration = () => (
 const HomePage = () => {
   const [featuredDomains, setFeaturedDomains] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchFeaturedDomains = async () => {
       try {
         setIsLoading(true);
+        setError(null);
+        console.log('Fetching domains from API...');
+        
         const domains = await domainAPI.getAllDomains();
+        console.log('Received domains:', domains);
+        
         // Filter featured domains from the API response
         const featured = domains.filter(domain => domain.featured).slice(0, 6);
-        setFeaturedDomains(featured);
+        console.log('Featured domains:', featured);
+        
+        // If no featured domains, show first 6 available domains
+        if (featured.length === 0) {
+          const availableDomains = domains.filter(domain => domain.status === 'available').slice(0, 6);
+          setFeaturedDomains(availableDomains);
+        } else {
+          setFeaturedDomains(featured);
+        }
       } catch (error) {
         console.error('Error fetching featured domains:', error);
-        // Fallback to empty array or show error message
+        setError(error.message || 'Failed to load domains');
         setFeaturedDomains([]);
       } finally {
         setIsLoading(false);
