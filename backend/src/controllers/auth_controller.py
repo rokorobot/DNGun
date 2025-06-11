@@ -36,7 +36,7 @@ async def register_user(user_data: UserCreate, db):
         created_at=user.created_at
     )
 
-async def authenticate_user(form_data: OAuth2PasswordRequestForm, db: AsyncIOMotorDatabase = Depends(get_database)):
+async def authenticate_user(form_data: OAuth2PasswordRequestForm, db):
     user_data = await db.users.find_one({"email": form_data.username})
     if not user_data:
         raise HTTPException(
