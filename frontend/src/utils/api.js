@@ -88,26 +88,46 @@ export const authAPI = {
 // Domain API methods
 export const domainAPI = {
   getAllDomains: async (params) => {
+    if (USE_MOCK_API) {
+      return mockDomainAPI.getAllDomains(params);
+    }
+    
     const response = await api.get('/domains', { params });
     return response.data;
   },
   
   getDomainById: async (id) => {
+    if (USE_MOCK_API) {
+      return mockDomainAPI.getDomainById(id);
+    }
+    
     const response = await api.get(`/domains/${id}`);
     return response.data;
   },
   
   getDomainByName: async (name, extension) => {
+    if (USE_MOCK_API) {
+      return mockDomainAPI.getDomainByName(name, extension);
+    }
+    
     const response = await api.get(`/domains/name/${name}/extension/${extension}`);
     return response.data;
   },
   
   searchDomains: async (query) => {
+    if (USE_MOCK_API) {
+      return mockDomainAPI.searchDomains(query);
+    }
+    
     const response = await api.get(`/domains/search`, { params: { q: query } });
     return response.data;
   },
   
   createDomain: async (domainData) => {
+    if (USE_MOCK_API) {
+      return mockDomainAPI.createDomain(domainData);
+    }
+    
     const response = await api.post('/domains', domainData);
     return response.data;
   },
