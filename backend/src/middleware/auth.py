@@ -6,7 +6,7 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/token")
 
-async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncIOMotorDatabase = None):
+async def get_current_user(token: str = Depends(oauth2_scheme), db = None):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
