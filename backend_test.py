@@ -1,17 +1,21 @@
 import requests
 import sys
 import json
+import os
 from datetime import datetime
 
 class DNGunAPITester:
-    def __init__(self, base_url="http://localhost:8001/api"):
-        self.base_url = base_url
+    def __init__(self, base_url=None):
+        # Use the environment variable or fallback to default
+        self.base_url = base_url or os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001/api')
         self.token = None
         self.tests_run = 0
         self.tests_passed = 0
         self.current_user = None
         self.test_domain = None
         self.test_transaction = None
+        self.buyer_user = None
+        self.seller_user = None
 
     def run_test(self, name, method, endpoint, expected_status, data=None, params=None):
         """Run a single API test"""
@@ -69,7 +73,7 @@ class DNGunAPITester:
         }
         
         # Direct request without using run_test to handle form data
-        print(f"\n🔍 Testing Login...")
+        print(f"\n🔍 Testing Login for {email}...")
         self.tests_run += 1
         
         try:
@@ -120,7 +124,12 @@ class DNGunAPITester:
         if success:
             print(f"Retrieved {len(response)} domains")
             if len(response) > 0:
-                self.test_domain = response[0]
+                # Find a domain with status 'available'
+                available_domains = [d for d in response if d.get('status') == 'available']
+                if available_domains:
+                    self.test_domain = available_domains[0]
+                else:
+                    self.test_domain = response[0]
                 print(f"Sample domain: {self.test_domain.get('name')}{self.test_domain.get('extension')}")
         return success
 
@@ -175,15 +184,15 @@ class DNGunAPITester:
             print(f"Created transaction ID: {response.get('id')}")
         return success
 
-    def test_add_chat_message(self):
+    def test_add_chat_message(self, message="Hello, I'm interested in this domain", sender_type="user"):
         """Test adding a chat message to a transaction"""
         if not self.test_transaction:
             print("❌ No test transaction available for chat")
             return False
             
         chat_data = {
-            "message": "Hello, I'm interested in this domain",
-            "sender_type": "user"
+            "message": message,
+            "sender_type": sender_type
         }
         
         success, response = self.run_test(
@@ -195,7 +204,7 @@ class DNGunAPITester:
         )
         
         if success:
-            print(f"Added chat message to transaction")
+            print(f"Added chat message to transaction: '{message}'")
         return success
 
     def test_get_chat_messages(self):
@@ -213,17 +222,19 @@ class DNGunAPITester:
         
         if success:
             print(f"Retrieved {len(response)} chat messages")
+            if len(response) > 0:
+                print(f"Sample message: '{response[0].get('message')}'")
         return success
 
-    def test_update_transaction_status(self):
+    def test_update_transaction_status(self, status="completed", message="Transaction completed successfully"):
         """Test updating transaction status"""
         if not self.test_transaction:
             print("❌ No test transaction available")
             return False
             
         status_data = {
-            "status": "completed",
-            "message": "Transaction completed successfully"
+            "status": status,
+            "message": message
         }
         
         success, response = self.run_test(
@@ -235,12 +246,146 @@ class DNGunAPITester:
         )
         
         if success:
-            print(f"Updated transaction status to 'completed'")
+            print(f"Updated transaction status to '{status}'")
         return success
 
+    def test_transaction_chat_flow(self):
+        """Test the complete transaction chat flow"""
+        if not self.test_transaction:
+            print("❌ No test transaction available for chat flow")
+            return False
+        
+        print("\n🔄 Testing Transaction Chat Flow...")
+        
+        # Buyer sends initial message
+        self.test_add_chat_message("I'd like to purchase this domain", "user")
+        
+        # Bot responds with escrow instructions
+        self.test_add_chat_message("To proceed with the purchase, please transfer the payment to our escrow service.", "bot")
+        
+        # Buyer confirms payment
+        self.test_add_chat_message("I have transferred the payment to the escrow account", "user")
+        
+        # Bot confirms payment received
+        self.test_add_chat_message("Payment verified! Now notifying the seller to transfer the domain.", "bot")
+        
+        # Seller responds about domain transfer
+        self.test_add_chat_message("I'll transfer the domain to DNGun's account", "user")
+        
+        # Bot confirms domain transfer
+        self.test_add_chat_message("Domain transfer verified! Releasing payment to seller.", "bot")
+        
+        # Bot completes transaction
+        self.test_add_chat_message("Transaction completed successfully! The domain has been transferred to the buyer.", "bot")
+        
+        # Get all messages to verify the flow
+        return self.test_get_chat_messages()
+
+    def test_register_user(self, email, username, password, full_name=None):
+        """Test user registration"""
+        user_data = {
+            "email": email,
+            "username": username,
+            "password": password,
+            "full_name": full_name
+        }
+        
+        success, response = self.run_test(
+            "Register User",
+            "POST",
+            "auth/register",
+            200,
+            data=user_data
+        )
+        
+        if success:
+            print(f"Registered new user: {response.get('username')}")
+        return success
+
+def test_buyer_seller_interaction():
+    """Test the complete buyer-seller interaction with transaction chat"""
+    # Get backend URL from environment
+    backend_url = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001/api')
+    
+    print("🚀 Starting DNGun Transaction Chat Flow Test")
+    print(f"Backend URL: {backend_url}")
+    
+    # Create buyer tester
+    buyer_tester = DNGunAPITester(backend_url)
+    
+    # Test root endpoint
+    buyer_tester.test_root_endpoint()
+    
+    # Login as buyer
+    if not buyer_tester.test_login("buyer@dngun.com", "buyer123"):
+        print("❌ Buyer login failed, stopping tests")
+        return 1
+    
+    # Get buyer info
+    buyer_tester.test_get_current_user()
+    
+    # Find available domains
+    buyer_tester.test_get_all_domains()
+    
+    # Create transaction
+    if not buyer_tester.test_create_transaction():
+        print("❌ Transaction creation failed, stopping tests")
+        return 1
+    
+    # Store transaction info
+    transaction_id = buyer_tester.test_transaction["id"]
+    domain_id = buyer_tester.test_transaction["domain_id"]
+    
+    # Buyer sends initial message
+    buyer_tester.test_add_chat_message("I'd like to purchase this domain", "user")
+    
+    # Create seller tester
+    seller_tester = DNGunAPITester(backend_url)
+    
+    # Login as seller
+    if not seller_tester.test_login("seller@dngun.com", "seller123"):
+        print("❌ Seller login failed, stopping tests")
+        return 1
+    
+    # Get seller info
+    seller_tester.test_get_current_user()
+    
+    # Seller checks transaction chat
+    seller_tester.test_transaction = {"id": transaction_id}
+    seller_tester.test_get_chat_messages()
+    
+    # Seller responds
+    seller_tester.test_add_chat_message("I'll transfer the domain once payment is confirmed", "user")
+    
+    # Buyer checks for seller's response
+    buyer_tester.test_get_chat_messages()
+    
+    # Buyer confirms payment
+    buyer_tester.test_add_chat_message("I have transferred the payment to the escrow account", "user")
+    
+    # Seller confirms domain transfer
+    seller_tester.test_add_chat_message("I've transferred the domain to DNGun's account", "user")
+    
+    # Buyer updates transaction status
+    buyer_tester.test_update_transaction_status("completed", "Domain received successfully")
+    
+    # Both check final messages
+    buyer_tester.test_get_chat_messages()
+    seller_tester.test_get_chat_messages()
+    
+    # Print results
+    print(f"\n📊 Buyer tests passed: {buyer_tester.tests_passed}/{buyer_tester.tests_run}")
+    print(f"📊 Seller tests passed: {seller_tester.tests_passed}/{seller_tester.tests_run}")
+    
+    total_tests = buyer_tester.tests_run + seller_tester.tests_run
+    total_passed = buyer_tester.tests_passed + seller_tester.tests_passed
+    
+    print(f"📊 Total tests passed: {total_passed}/{total_tests}")
+    return 0 if total_passed == total_tests else 1
+
 def main():
-    # Get backend URL from environment or use default
-    backend_url = "http://localhost:8001/api"
+    # Get backend URL from environment
+    backend_url = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001/api')
     
     # Setup tester
     tester = DNGunAPITester(backend_url)
@@ -263,17 +408,34 @@ def main():
     # Test domain endpoints
     tester.test_get_all_domains()
     tester.test_search_domains("tech")
-    tester.test_get_domain_by_name("webcreator", ".com")
+    
+    # Try to get a specific domain, fallback to using the one from get_all_domains
+    try:
+        tester.test_get_domain_by_name("webcreator", ".com")
+    except:
+        print("⚠️ Could not find specific domain, using previously found domain")
     
     # Test transaction endpoints
     tester.test_create_transaction()
+    
+    # Test transaction chat
     tester.test_add_chat_message()
     tester.test_get_chat_messages()
+    
+    # Test complete transaction chat flow
+    tester.test_transaction_chat_flow()
+    
+    # Test transaction status update
     tester.test_update_transaction_status()
     
     # Print results
     print(f"\n📊 Tests passed: {tester.tests_passed}/{tester.tests_run}")
-    return 0 if tester.tests_passed == tester.tests_run else 1
+    
+    # Test buyer-seller interaction
+    print("\n🔄 Testing Buyer-Seller Interaction...")
+    interaction_result = test_buyer_seller_interaction()
+    
+    return 0 if tester.tests_passed == tester.tests_run and interaction_result == 0 else 1
 
 if __name__ == "__main__":
     sys.exit(main())
