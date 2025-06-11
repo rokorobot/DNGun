@@ -889,4 +889,4 @@ def test_domain_loading():
     return 0 if tester.tests_passed == tester.tests_run else 1
 
 if __name__ == "__main__":
-    sys.exit(test_stripe_payment_integration_enhanced())
+    sys.exit(test_domain_loading())
