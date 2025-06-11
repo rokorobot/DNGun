@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { domainAPI } from '../utils/api';
-import TransactionModal from '../components/TransactionModal';
+import EnhancedTransactionModal from '../components/EnhancedTransactionModal';
 import { useAuth } from '../context/AuthContext';
 
 const DomainDetailPage = () => {
