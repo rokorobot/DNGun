@@ -16,17 +16,20 @@ const DashboardPage = () => {
       try {
         setLoading(true);
         
-        // Fetch user's domains and transactions
-        const [domainsData, transactionsData] = await Promise.all([
-          userAPI.getUserDomains().catch(() => []),
-          transactionAPI.getUserTransactions().catch(() => [])
+        // For demo purposes, if API calls fail, show empty state instead of loading forever
+        const [domainsData, transactionsData] = await Promise.allSettled([
+          userAPI.getUserDomains(),
+          transactionAPI.getUserTransactions()
         ]);
         
-        setUserDomains(domainsData);
-        setTransactions(transactionsData);
+        setUserDomains(domainsData.status === 'fulfilled' ? domainsData.value : []);
+        setTransactions(transactionsData.status === 'fulfilled' ? transactionsData.value : []);
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
         setError('Failed to load dashboard data');
+        // Set empty arrays so page doesn't load forever
+        setUserDomains([]);
+        setTransactions([]);
       } finally {
         setLoading(false);
       }
@@ -34,6 +37,11 @@ const DashboardPage = () => {
 
     if (user) {
       fetchDashboardData();
+    } else {
+      // If no user, stop loading and show empty state
+      setLoading(false);
+      setUserDomains([]);
+      setTransactions([]);
     }
   }, [user]);
 
