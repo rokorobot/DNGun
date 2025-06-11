@@ -10,8 +10,16 @@ const TestPage = () => {
     const testBackendConnection = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('http://localhost:8002/test');
-        setMessage(response.data.message);
+        console.log('Testing connection to:', 'http://localhost:8002/test');
+        
+        // Use fetch API instead of axios
+        const response = await fetch('http://localhost:8002/test');
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        
+        setMessage(data.message);
         setError(null);
       } catch (err) {
         console.error('Error connecting to backend:', err);
