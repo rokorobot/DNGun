@@ -148,6 +148,26 @@ const HomePage = () => {
             <div className="flex justify-center items-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent-teal"></div>
             </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
+                <h3 className="text-lg font-semibold text-red-800 mb-2">Unable to Load Domains</h3>
+                <p className="text-red-600 text-sm">{error}</p>
+                <button 
+                  onClick={() => window.location.reload()} 
+                  className="mt-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded transition-colors"
+                >
+                  Try Again
+                </button>
+              </div>
+            </div>
+          ) : featuredDomains.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500">No featured domains available at the moment.</p>
+              <a href="/buy-domain" className="mt-4 inline-block bg-accent-teal hover:bg-opacity-90 text-white px-6 py-3 rounded-full transition-colors">
+                Browse All Domains
+              </a>
+            </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {featuredDomains.map(domain => (
