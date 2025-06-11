@@ -136,16 +136,28 @@ export const domainAPI = {
 // Transaction API methods
 export const transactionAPI = {
   createTransaction: async (transactionData) => {
+    if (USE_MOCK_API) {
+      return mockTransactionAPI.createTransaction(transactionData);
+    }
+    
     const response = await api.post('/transactions', transactionData);
     return response.data;
   },
   
   completeTransaction: async (id) => {
+    if (USE_MOCK_API) {
+      return mockTransactionAPI.completeTransaction(id);
+    }
+    
     const response = await api.put(`/transactions/${id}/complete`);
     return response.data;
   },
   
   getUserTransactions: async () => {
+    if (USE_MOCK_API) {
+      return mockTransactionAPI.getUserTransactions();
+    }
+    
     const response = await api.get('/transactions');
     return response.data;
   },
@@ -154,16 +166,28 @@ export const transactionAPI = {
 // User API methods
 export const userAPI = {
   getUserDomains: async () => {
+    if (USE_MOCK_API) {
+      return mockUserAPI.getUserDomains();
+    }
+    
     const response = await api.get('/users/me/domains');
     return response.data;
   },
   
   getUserSellingDomains: async () => {
+    if (USE_MOCK_API) {
+      return mockUserAPI.getUserSellingDomains();
+    }
+    
     const response = await api.get('/users/me/domains/selling');
     return response.data;
   },
   
   getUserOwnedDomains: async () => {
+    if (USE_MOCK_API) {
+      return mockUserAPI.getUserOwnedDomains();
+    }
+    
     const response = await api.get('/users/me/domains/owned');
     return response.data;
   },
