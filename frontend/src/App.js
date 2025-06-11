@@ -55,6 +55,7 @@ function App() {
               <Route path="/search" element={<SearchResultsPage />} />
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/my-domains" element={<MyDomainsPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
               <Route path="/payment/success" element={<PaymentSuccessPage />} />
               <Route path="/payment/test" element={<PaymentTestPage />} />
               <Route path="/test" element={<TestPage />} />
