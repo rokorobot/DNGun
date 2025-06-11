@@ -51,6 +51,7 @@ function App() {
               <Route path="/domain/:domainName" element={<DomainDetailPage />} />
               <Route path="/search" element={<SearchResultsPage />} />
               <Route path="/payment/success" element={<PaymentSuccessPage />} />
+              <Route path="/payment/test" element={<PaymentTestPage />} />
               <Route path="/test" element={<TestPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
