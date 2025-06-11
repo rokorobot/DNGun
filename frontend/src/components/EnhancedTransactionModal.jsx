@@ -284,6 +284,14 @@ const EnhancedTransactionModal = ({ isOpen, onClose, domain, seller }) => {
           )}
         </div>
       </div>
+
+      {/* 2FA Verification Modal */}
+      <TwoFactorVerification
+        isOpen={show2FAVerification}
+        onClose={() => setShow2FAVerification(false)}
+        onSuccess={handle2FASuccess}
+        purpose="transaction"
+      />
     </div>
   );
 
