@@ -14,6 +14,9 @@ import BuyPage from "./pages/BuyPage";
 import SellPage from "./pages/SellPage";
 import DomainDetailPage from "./pages/DomainDetailPage";
 
+// API utilities
+import { domainAPI } from "./utils/api";
+
 // Context
 import { AuthProvider } from "./context/AuthContext";
 
