@@ -519,10 +519,10 @@ const DomainDetailPage = () => {
       </section>
 
       {/* Enhanced Transaction Modal */}
-      {showTransactionModal && (
+      {showPaymentModal && (
         <EnhancedTransactionModal
-          isOpen={showTransactionModal}
-          onClose={() => setShowTransactionModal(false)}
+          isOpen={showPaymentModal}
+          onClose={() => setShowPaymentModal(false)}
           domain={domain}
           seller={{ id: domain.seller_id, username: 'Domain Seller', email: 'seller@example.com' }}
         />
