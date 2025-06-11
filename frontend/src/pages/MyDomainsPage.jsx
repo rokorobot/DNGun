@@ -20,11 +20,12 @@ const MyDomainsPage = () => {
         setError(null);
         
         const domainsData = await userAPI.getUserDomains();
-        setDomains(domainsData);
-        setFilteredDomains(domainsData);
+        setDomains(domainsData || []);
+        setFilteredDomains(domainsData || []);
       } catch (error) {
         console.error('Error fetching user domains:', error);
         setError('Failed to load your domains');
+        // Set empty arrays so page doesn't load forever
         setDomains([]);
         setFilteredDomains([]);
       } finally {
@@ -34,6 +35,11 @@ const MyDomainsPage = () => {
 
     if (user) {
       fetchUserDomains();
+    } else {
+      // If no user, stop loading and show empty state
+      setLoading(false);
+      setDomains([]);
+      setFilteredDomains([]);
     }
   }, [user]);
 
