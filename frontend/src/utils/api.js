@@ -51,18 +51,35 @@ export const authAPI = {
       return mockAuthAPI.login(email, password);
     }
     
+    console.log('🔍 Login Debug:');
+    console.log('Email:', email);
+    console.log('API baseURL:', api.defaults.baseURL);
+    console.log('Full login URL:', api.defaults.baseURL + '/auth/token');
+    
     // Use URLSearchParams for proper form encoding
     const formData = new URLSearchParams();
     formData.append('username', email);
     formData.append('password', password);
     
-    const response = await api.post('/auth/token', formData, {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-    });
+    console.log('Form data:', formData.toString());
     
-    return response.data;
+    try {
+      const response = await api.post('/auth/token', formData, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      });
+      
+      console.log('✅ Login successful:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Login failed:', error);
+      console.error('Request URL:', error.config?.url);
+      console.error('Request method:', error.config?.method);
+      console.error('Response status:', error.response?.status);
+      console.error('Response data:', error.response?.data);
+      throw error;
+    }
   },
   
   register: async (userData) => {
