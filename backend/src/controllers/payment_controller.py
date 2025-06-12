@@ -188,12 +188,12 @@ class PaymentController:
         try:
             # Check if Stripe is properly configured
             if not stripe_checkout:
-                # For demo/testing, create a mock status response
-                mock_status = PaymentStatusResponse(
+                # For demo/testing, return the actual status from database instead of mock
+                return PaymentStatusResponse(
                     payment_id=payment_record["id"],
                     stripe_session_id=session_id,
-                    payment_status="pending",
-                    stripe_payment_status="unpaid",
+                    payment_status=payment_record["payment_status"],
+                    stripe_payment_status=payment_record.get("stripe_payment_status", "unpaid"),
                     amount=payment_record["amount"],
                     currency=payment_record["currency"],
                     domain_name=payment_record.get("domain_name"),
@@ -201,8 +201,6 @@ class PaymentController:
                     completed_at=payment_record.get("completed_at"),
                     metadata=payment_record.get("metadata")
                 )
-                
-                return mock_status
             
             # Check status with Stripe
             checkout_status: CheckoutStatusResponse = await stripe_checkout.get_checkout_status(session_id)
