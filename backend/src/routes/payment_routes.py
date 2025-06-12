@@ -96,6 +96,10 @@ async def complete_mock_payment(
                 detail="Payment session not found"
             )
         
+        # Check if already completed
+        if payment_record.get("payment_status") == "paid":
+            return {"status": "success", "message": "Payment already completed"}
+        
         # Update payment status to completed
         update_data = {
             "payment_status": "paid",
@@ -104,21 +108,34 @@ async def complete_mock_payment(
             "updated_at": datetime.utcnow()
         }
         
-        await db.payment_transactions.update_one(
+        update_result = await db.payment_transactions.update_one(
             {"stripe_session_id": session_id},
             {"$set": update_data}
         )
         
+        print(f"Payment update result: modified_count={update_result.modified_count}")
+        
         # Mark domain as sold
         if payment_record.get("domain_id"):
-            await db.domains.update_one(
+            domain_update_result = await db.domains.update_one(
                 {"id": payment_record["domain_id"]},
                 {"$set": {"status": "sold", "updated_at": datetime.utcnow()}}
             )
+            print(f"Domain update result: modified_count={domain_update_result.modified_count}")
         
-        return {"status": "success", "message": "Mock payment completed successfully"}
+        # Verify the update worked
+        updated_payment = await db.payment_transactions.find_one({"stripe_session_id": session_id})
+        print(f"Updated payment status: {updated_payment.get('payment_status')}")
+        
+        return {
+            "status": "success", 
+            "message": "Mock payment completed successfully",
+            "payment_status": updated_payment.get('payment_status'),
+            "updated_count": update_result.modified_count
+        }
         
     except Exception as e:
+        print(f"Error in mock payment completion: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to complete mock payment: {str(e)}"
