@@ -13,6 +13,12 @@ const api = axios.create({
   },
 });
 
+// Debug logging for API URL
+console.log('🔍 API Configuration Debug:');
+console.log('Environment Variable REACT_APP_BACKEND_URL:', process.env.REACT_APP_BACKEND_URL);
+console.log('Axios baseURL:', api.defaults.baseURL);
+console.log('Full API URL for auth:', api.defaults.baseURL + '/auth/token');
+
 // Add a request interceptor to include the auth token in requests
 api.interceptors.request.use(
   (config) => {
