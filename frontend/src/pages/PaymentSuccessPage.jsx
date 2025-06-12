@@ -27,7 +27,7 @@ const PaymentSuccessPage = () => {
     try {
       setPaymentStatus('checking');
       
-      const result = await paymentAPI.pollPaymentStatus(sessionId);
+      const result = await paymentAPI.pollPaymentStatus(sessionId, 15, 1000); // 15 attempts, 1 second intervals
       
       if (result.success) {
         setPaymentData(result.status);
