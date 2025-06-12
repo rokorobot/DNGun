@@ -132,7 +132,10 @@ class PaymentController:
         except Exception as e:
             # For demo purposes, create a mock checkout session
             if "Invalid API Key" in str(e) or not stripe_checkout:
-                mock_session_id = f"cs_test_mock_{domain.id[:8]}"
+                # Create a unique session ID with timestamp
+                import time
+                timestamp = str(int(time.time()))[-6:]  # Last 6 digits of timestamp
+                mock_session_id = f"cs_test_mock_{domain.id[:8]}_{timestamp}"
                 
                 # Instead of fake Stripe URL, redirect to our internal mock checkout
                 mock_checkout_url = f"{request.origin_url}/#/mock-stripe-checkout?session_id={mock_session_id}"
