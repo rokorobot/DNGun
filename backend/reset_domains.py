@@ -29,8 +29,8 @@ async def reset_domains_to_available():
                 print(f"⚠️ Domain {domain_name} not found or already available")
         
         # Clear any existing payment transactions to avoid conflicts
-        await db.payment_transactions.delete_many({"payment_status": {"$in": ["pending", "failed"]}})
-        print("🧹 Cleared pending/failed payment transactions")
+        await db.payment_transactions.delete_many({})
+        print("🧹 Cleared ALL payment transactions")
         
         # Get count of available domains
         available_count = await db.domains.count_documents({"status": "available"})
