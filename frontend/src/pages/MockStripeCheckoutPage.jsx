@@ -11,13 +11,12 @@ const MockStripeCheckoutPage = () => {
   const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
-    // Extract session ID from URL (e.g., from hash #cs_test_mock_abc123)
-    const hash = window.location.hash.substring(1);
-    const sessionIdFromHash = hash || searchParams.get('session_id');
+    // Extract session ID from URL parameter
+    const sessionIdFromUrl = searchParams.get('session_id');
     
-    if (sessionIdFromHash) {
-      setSessionId(sessionIdFromHash);
-      fetchPaymentData(sessionIdFromHash);
+    if (sessionIdFromUrl) {
+      setSessionId(sessionIdFromUrl);
+      fetchPaymentData(sessionIdFromUrl);
     } else {
       setLoading(false);
     }
