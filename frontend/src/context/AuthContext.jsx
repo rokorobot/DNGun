@@ -36,16 +36,35 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       setError(null);
       
+      console.log('Attempting to login with email:', email);
+      
       const response = await authAPI.login(email, password);
+      console.log('Login response:', response);
+      
       localStorage.setItem('token', response.access_token);
       
       const userData = await authAPI.getCurrentUser();
+      console.log('User data retrieved:', userData);
       setUser(userData);
       
       return userData;
     } catch (err) {
       console.error('Login error:', err);
-      const errorMessage = err.response?.data?.detail || 'Login failed. Please check your credentials.';
+      console.error('Login error response:', err.response);
+      console.error('Login error data:', err.response?.data);
+      
+      // Parse error message more carefully
+      let errorMessage = 'Login failed. Please check your credentials.';
+      
+      if (err.response?.data?.detail) {
+        errorMessage = err.response.data.detail;
+      } else if (err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      console.log('Final login error message:', errorMessage);
       setError(errorMessage);
       throw new Error(errorMessage);
     } finally {
