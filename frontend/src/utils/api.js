@@ -7,7 +7,7 @@ const USE_MOCK_API = false;
 
 // Create an axios instance with default config
 const api = axios.create({
-  baseURL: process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001/api',
+  baseURL: process.env.REACT_APP_BACKEND_URL || 'https://fe2a4b0f-3203-46bc-b0cf-2cc736b736fd.preview.emergentagent.com/api',
   headers: {
     'Content-Type': 'application/json',
   },
