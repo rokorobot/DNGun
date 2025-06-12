@@ -419,18 +419,18 @@ def test_comprehensive_api():
     return 0 if tester.tests_passed == tester.tests_run else 1
 
 def test_registration_issue():
-    """Test the registration issue that has been fixed"""
+    """Test the registration and login issues that have been fixed"""
     # Get backend URL from environment
     backend_url = os.environ.get('REACT_APP_BACKEND_URL', 'https://fe2a4b0f-3203-46bc-b0cf-2cc736b736fd.preview.emergentagent.com/api')
     
-    print("\n🔍 TESTING REGISTRATION ISSUE\n")
+    print("\n🔍 TESTING REGISTRATION AND LOGIN FIXES\n")
     print(f"Backend URL: {backend_url}")
     
     # Setup tester
     tester = DNGunAPITester(backend_url)
     
-    # Test 1: Login with existing user (Bobo/rokoroko@seznam.cz)
-    print("\n🔍 Test 1: Login with existing user (Bobo/rokoroko@seznam.cz)")
+    # Scenario 1: Test Login with Existing User
+    print("\n🔍 Scenario 1: Test Login with Existing User (Bobo/rokoroko@seznam.cz)")
     login_success = tester.test_login("rokoroko@seznam.cz", "testpassword123")
     
     if login_success:
@@ -453,9 +453,10 @@ def test_registration_issue():
                 print(f"❌ Username does not match expected value. Got '{username}', expected 'Bobo'")
     else:
         print("❌ Failed to login with existing user (rokoroko@seznam.cz)")
+        print("❌ This indicates the form data encoding fix may not be working")
     
-    # Test 2: Try to register with an existing email
-    print("\n🔍 Test 2: Try to register with an existing email")
+    # Scenario 2: Test Registration Error Handling
+    print("\n🔍 Scenario 2: Test Registration Error Handling")
     
     # Prepare registration data with existing email
     registration_data = {
@@ -486,8 +487,35 @@ def test_registration_issue():
     else:
         print("❌ Registration with existing email test failed")
     
-    # Test 3: Register with a new email
-    print("\n🔍 Test 3: Register with a new email")
+    # Scenario 3: Test Login After Registration Error
+    print("\n🔍 Scenario 3: Test Login After Registration Error")
+    
+    # We'll simulate this by trying to login again with the existing user
+    second_login_success = tester.test_login("rokoroko@seznam.cz", "testpassword123")
+    
+    if second_login_success:
+        print("✅ Successfully logged in after registration error")
+        
+        # Verify user info again
+        user_info_success, user_data = tester.run_test(
+            "Get Current User",
+            "GET",
+            "users/me",
+            200
+        )
+        
+        if user_info_success:
+            username = user_data.get('username')
+            print(f"✅ Logged in as user: {username}")
+    else:
+        print("❌ Failed to login after registration error")
+    
+    # Scenario 4: Test Complete User Journey
+    # This will be tested in the UI with Playwright
+    print("\n🔍 Scenario 4: Complete User Journey will be tested with Playwright")
+    
+    # Additional test: Register with a new email
+    print("\n🔍 Additional Test: Register with a new email")
     
     # Generate a unique email
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
@@ -524,6 +552,11 @@ def test_registration_issue():
     
     # Print results
     print(f"\n📊 Tests passed: {tester.tests_passed}/{tester.tests_run}")
+    print("\n🔍 BACKEND API TESTING SUMMARY:")
+    print("✅ Login with existing user: " + ("Passed" if login_success else "Failed"))
+    print("✅ Registration error handling: " + ("Passed" if reg_success else "Failed"))
+    print("✅ Login after registration error: " + ("Passed" if second_login_success else "Failed"))
+    print("✅ New user registration: " + ("Passed" if new_reg_success else "Failed"))
     
     return 0 if tester.tests_passed == tester.tests_run else 1
 
