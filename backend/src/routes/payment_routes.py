@@ -116,7 +116,7 @@ async def complete_mock_payment(
             {"$set": update_data}
         )
         
-        print(f"Payment update result: modified_count={update_result.modified_count}")
+        logger.info(f"Payment update result: modified_count={update_result.modified_count}")
         
         # Mark domain as sold
         if payment_record.get("domain_id"):
@@ -124,11 +124,11 @@ async def complete_mock_payment(
                 {"id": payment_record["domain_id"]},
                 {"$set": {"status": "sold", "updated_at": datetime.utcnow()}}
             )
-            print(f"Domain update result: modified_count={domain_update_result.modified_count}")
+            logger.info(f"Domain update result: modified_count={domain_update_result.modified_count}")
         
         # Verify the update worked
         updated_payment = await db.payment_transactions.find_one({"stripe_session_id": session_id})
-        print(f"Updated payment status: {updated_payment.get('payment_status')}")
+        logger.info(f"Updated payment status: {updated_payment.get('payment_status')}")
         
         return {
             "status": "success", 
@@ -138,7 +138,7 @@ async def complete_mock_payment(
         }
         
     except Exception as e:
-        print(f"Error in mock payment completion: {str(e)}")
+        logger.error(f"Error in mock payment completion: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to complete mock payment: {str(e)}"
