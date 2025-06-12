@@ -133,7 +133,9 @@ class PaymentController:
             # For demo purposes, create a mock checkout session
             if "Invalid API Key" in str(e) or not stripe_checkout:
                 mock_session_id = f"cs_test_mock_{domain.id[:8]}"
-                mock_checkout_url = f"https://checkout.stripe.com/pay/{mock_session_id}#fidkdWxOYHwnPyd1blppbHNgWjA0YUtrUkNDN1NOY2ZDVk5iaHRrVF9SdV9VdGRSTnZVYU1pZFR1ZUZGXUx1akxiSWNHY08xYjJXREdNN2MzRnVjN2BfdzFyYTJ3aHVHcnVxUz12"
+                
+                # Instead of fake Stripe URL, redirect to our internal mock checkout
+                mock_checkout_url = f"{request.origin_url}/#/mock-stripe-checkout?session_id={mock_session_id}"
                 
                 # Create a mock payment transaction for testing
                 payment_transaction = PaymentTransaction(
