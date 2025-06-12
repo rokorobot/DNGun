@@ -89,6 +89,12 @@ export const paymentAPI = {
     return null;
   },
 
+  // Complete mock payment (for demo purposes)
+  completeMockPayment: async (sessionId) => {
+    const response = await axios.post(`/payments/mock/complete/${sessionId}`);
+    return response.data;
+  },
+
   // Initiate domain purchase flow
   initiateDomainPurchase: async (domain) => {
     try {
