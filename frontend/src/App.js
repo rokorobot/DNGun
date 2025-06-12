@@ -29,8 +29,13 @@ import { domainAPI } from "./utils/api";
 // Context
 import { AuthProvider } from "./context/AuthContext";
 
-// Set axios defaults
-axios.defaults.baseURL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001/api';
+// Set axios defaults with explicit API URL
+const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://fe2a4b0f-3203-46bc-b0cf-2cc736b736fd.preview.emergentagent.com/api';
+axios.defaults.baseURL = backendURL;
+
+console.log('🔍 App.js axios configuration:');
+console.log('Environment REACT_APP_BACKEND_URL:', process.env.REACT_APP_BACKEND_URL);
+console.log('Final axios baseURL:', axios.defaults.baseURL);
 
 function App() {
   const [isPageLoaded, setIsPageLoaded] = useState(false);
