@@ -51,7 +51,23 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
       onSwitchToLogin(); // Switch to login after successful registration
     } catch (error) {
       console.error('Registration error:', error);
-      setErrorMessage(error.message || 'Registration failed. Please try again.');
+      
+      // Handle specific error cases
+      let errorMsg = 'Registration failed. Please try again.';
+      
+      if (error.message) {
+        if (error.message.includes('Email already registered')) {
+          errorMsg = `This email address is already registered. Please use a different email or try logging in instead.`;
+        } else if (error.message.includes('Username already taken')) {
+          errorMsg = 'This username is already taken. Please choose a different username.';
+        } else if (error.message.includes('Invalid email')) {
+          errorMsg = 'Please enter a valid email address.';
+        } else {
+          errorMsg = error.message;
+        }
+      }
+      
+      setErrorMessage(errorMsg);
     } finally {
       setLoading(false);
     }
