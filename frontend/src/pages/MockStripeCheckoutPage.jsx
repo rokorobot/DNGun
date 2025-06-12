@@ -38,21 +38,30 @@ const MockStripeCheckoutPage = () => {
     setProcessing(true);
 
     try {
+      console.log('🔄 Starting mock payment completion for session:', sessionId);
+      
       // Complete the mock payment in the backend
-      await paymentAPI.completeMockPayment(sessionId);
+      const completionResult = await paymentAPI.completeMockPayment(sessionId);
+      console.log('✅ Mock payment completed:', completionResult);
       
       // Small delay to simulate processing
       setTimeout(() => {
+        console.log('🎯 Redirecting to success page with session:', sessionId);
         // Redirect to success page with session ID
         navigate(`/payment/success?session_id=${sessionId}`);
-      }, 1500);
+      }, 1000);
+      
     } catch (error) {
-      console.error('Error completing mock payment:', error);
-      setProcessing(false);
-      // Still redirect to success page for demo, but log the error
+      console.error('❌ Error completing mock payment:', error);
+      console.error('Error details:', error.response?.data);
+      
+      // For demo purposes, still redirect but log the error
       setTimeout(() => {
+        console.log('⚠️ Redirecting to success page despite error');
         navigate(`/payment/success?session_id=${sessionId}`);
-      }, 1500);
+      }, 1000);
+      
+      setProcessing(false);
     }
   };
 
