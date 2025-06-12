@@ -23,8 +23,16 @@ export const paymentAPI = {
 
   // Check payment status (for polling after Stripe redirect)
   checkPaymentStatus: async (sessionId) => {
-    const response = await axios.get(`/payments/status/${sessionId}`);
-    return response.data;
+    console.log('🔍 Checking payment status for session:', sessionId);
+    try {
+      const response = await axios.get(`/payments/status/${sessionId}`);
+      console.log('📊 Payment status response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Payment status check failed:', error);
+      console.error('Error response:', error.response?.data);
+      throw error;
+    }
   },
 
   // Get user's payment history
