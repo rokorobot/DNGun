@@ -91,8 +91,16 @@ export const paymentAPI = {
 
   // Complete mock payment (for demo purposes)
   completeMockPayment: async (sessionId) => {
-    const response = await axios.post(`/payments/mock/complete/${sessionId}`);
-    return response.data;
+    console.log('🔄 Completing mock payment for session:', sessionId);
+    try {
+      const response = await axios.post(`/payments/mock/complete/${sessionId}`);
+      console.log('✅ Mock payment completion response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Mock payment completion failed:', error);
+      console.error('Error response:', error.response?.data);
+      throw error;
+    }
   },
 
   // Initiate domain purchase flow
