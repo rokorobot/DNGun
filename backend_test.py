@@ -418,6 +418,115 @@ def test_comprehensive_api():
     
     return 0 if tester.tests_passed == tester.tests_run else 1
 
+def test_registration_issue():
+    """Test the registration issue that has been fixed"""
+    # Get backend URL from environment
+    backend_url = os.environ.get('REACT_APP_BACKEND_URL', 'https://fe2a4b0f-3203-46bc-b0cf-2cc736b736fd.preview.emergentagent.com/api')
+    
+    print("\n🔍 TESTING REGISTRATION ISSUE\n")
+    print(f"Backend URL: {backend_url}")
+    
+    # Setup tester
+    tester = DNGunAPITester(backend_url)
+    
+    # Test 1: Login with existing user (Bobo/rokoroko@seznam.cz)
+    print("\n🔍 Test 1: Login with existing user (Bobo/rokoroko@seznam.cz)")
+    login_success = tester.test_login("rokoroko@seznam.cz", "testpassword123")
+    
+    if login_success:
+        print("✅ Successfully logged in with existing user (rokoroko@seznam.cz)")
+        
+        # Verify user info
+        user_info_success, user_data = tester.run_test(
+            "Get Current User",
+            "GET",
+            "users/me",
+            200
+        )
+        
+        if user_info_success:
+            username = user_data.get('username')
+            print(f"✅ Logged in as user: {username}")
+            if username == "Bobo":
+                print("✅ Username matches expected value 'Bobo'")
+            else:
+                print(f"❌ Username does not match expected value. Got '{username}', expected 'Bobo'")
+    else:
+        print("❌ Failed to login with existing user (rokoroko@seznam.cz)")
+    
+    # Test 2: Try to register with an existing email
+    print("\n🔍 Test 2: Try to register with an existing email")
+    
+    # Prepare registration data with existing email
+    registration_data = {
+        "username": "TestUser",
+        "email": "rokoroko@seznam.cz",  # Already registered email
+        "password": "somepassword",
+        "full_name": "Test User"
+    }
+    
+    # Attempt registration with existing email
+    reg_success, reg_response = tester.run_test(
+        "Register with existing email",
+        "POST",
+        "auth/register",
+        400,  # Expecting 400 Bad Request
+        data=registration_data
+    )
+    
+    if reg_success:
+        print("✅ Registration with existing email correctly returned error")
+        error_detail = reg_response.get('detail', '')
+        print(f"Error message: {error_detail}")
+        
+        if "Email already registered" in error_detail:
+            print("✅ Error message correctly indicates email is already registered")
+        else:
+            print("❌ Error message does not clearly indicate email is already registered")
+    else:
+        print("❌ Registration with existing email test failed")
+    
+    # Test 3: Register with a new email
+    print("\n🔍 Test 3: Register with a new email")
+    
+    # Generate a unique email
+    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    new_email = f"newuser{timestamp}@example.com"
+    
+    # Prepare registration data with new email
+    new_registration_data = {
+        "username": "NewUser" + timestamp,
+        "email": new_email,
+        "password": "newpassword123",
+        "full_name": "New Test User"
+    }
+    
+    # Attempt registration with new email
+    new_reg_success, new_reg_response = tester.run_test(
+        "Register with new email",
+        "POST",
+        "auth/register",
+        200,  # Expecting 200 OK
+        data=new_registration_data
+    )
+    
+    if new_reg_success:
+        print(f"✅ Successfully registered new user with email: {new_email}")
+        
+        # Try to login with the new user
+        new_login_success = tester.test_login(new_email, "newpassword123")
+        if new_login_success:
+            print("✅ Successfully logged in with newly registered user")
+        else:
+            print("❌ Failed to login with newly registered user")
+    else:
+        print(f"❌ Failed to register new user with email: {new_email}")
+    
+    # Print results
+    print(f"\n📊 Tests passed: {tester.tests_passed}/{tester.tests_run}")
+    
+    return 0 if tester.tests_passed == tester.tests_run else 1
+
 if __name__ == "__main__":
-    # Run the critical issues test by default
-    sys.exit(test_critical_issues())
+    # Run the registration issue test
+    sys.exit(test_registration_issue())
