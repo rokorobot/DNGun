@@ -45,13 +45,14 @@ export const authAPI = {
       return mockAuthAPI.login(email, password);
     }
     
-    const formData = new FormData();
+    // Use URLSearchParams for proper form encoding
+    const formData = new URLSearchParams();
     formData.append('username', email);
     formData.append('password', password);
     
     const response = await api.post('/auth/token', formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
     });
     
