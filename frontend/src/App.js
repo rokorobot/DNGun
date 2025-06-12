@@ -65,6 +65,7 @@ function App() {
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/payment/success" element={<PaymentSuccessPage />} />
               <Route path="/payment/test" element={<PaymentTestPage />} />
+              <Route path="/mock-stripe-checkout" element={<MockStripeCheckoutPage />} />
               <Route path="/api-test" element={<APITestPage />} />
               <Route path="/test" element={<TestPage />} />
               <Route path="*" element={<NotFoundPage />} />
