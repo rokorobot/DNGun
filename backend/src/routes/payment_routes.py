@@ -78,19 +78,48 @@ async def release_escrow_payment(
     # TODO: Add admin authorization check
     return await PaymentController.initiate_escrow_release(payment_id, domain_transfer_confirmed, db)
 
-# For webhook handling (if implementing Stripe webhooks)
-@router.post("/webhook/stripe")
-async def stripe_webhook(
-    request: dict,
+@router.post("/mock/complete/{session_id}")
+async def complete_mock_payment(
+    session_id: str,
     db: AsyncIOMotorDatabase = Depends(get_database)
 ):
     """
-    Handle Stripe webhook events for real-time payment updates.
-    
-    This provides an alternative to polling for payment status updates.
+    Complete a mock payment for demo purposes.
+    This simulates what would happen when Stripe confirms a payment.
     """
-    # TODO: Implement webhook signature verification
-    # TODO: Handle payment.succeeded, payment.failed, etc. events
-    # TODO: Update payment_transactions collection based on webhook events
-    
-    return {"status": "received"}
+    try:
+        # Find the payment transaction
+        payment_record = await db.payment_transactions.find_one({"stripe_session_id": session_id})
+        if not payment_record:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Payment session not found"
+            )
+        
+        # Update payment status to completed
+        update_data = {
+            "payment_status": "paid",
+            "stripe_payment_status": "paid",
+            "completed_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow()
+        }
+        
+        await db.payment_transactions.update_one(
+            {"stripe_session_id": session_id},
+            {"$set": update_data}
+        )
+        
+        # Mark domain as sold
+        if payment_record.get("domain_id"):
+            await db.domains.update_one(
+                {"id": payment_record["domain_id"]},
+                {"$set": {"status": "sold", "updated_at": datetime.utcnow()}}
+            )
+        
+        return {"status": "success", "message": "Mock payment completed successfully"}
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to complete mock payment: {str(e)}"
+        )
