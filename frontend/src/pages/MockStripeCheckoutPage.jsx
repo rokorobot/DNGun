@@ -37,11 +37,23 @@ const MockStripeCheckoutPage = () => {
     e.preventDefault();
     setProcessing(true);
 
-    // Simulate payment processing delay
-    setTimeout(() => {
-      // Redirect to success page with session ID
-      navigate(`/payment/success?session_id=${sessionId}`);
-    }, 2000);
+    try {
+      // Complete the mock payment in the backend
+      await paymentAPI.completeMockPayment(sessionId);
+      
+      // Small delay to simulate processing
+      setTimeout(() => {
+        // Redirect to success page with session ID
+        navigate(`/payment/success?session_id=${sessionId}`);
+      }, 1500);
+    } catch (error) {
+      console.error('Error completing mock payment:', error);
+      setProcessing(false);
+      // Still redirect to success page for demo, but log the error
+      setTimeout(() => {
+        navigate(`/payment/success?session_id=${sessionId}`);
+      }, 1500);
+    }
   };
 
   const handleCancel = () => {
