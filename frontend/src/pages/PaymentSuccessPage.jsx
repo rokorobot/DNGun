@@ -26,10 +26,13 @@ const PaymentSuccessPage = () => {
   const handlePaymentVerification = async (sessionId) => {
     try {
       setPaymentStatus('checking');
+      console.log('🔍 Checking payment status for session:', sessionId);
       
       const result = await paymentAPI.pollPaymentStatus(sessionId, 15, 1000); // 15 attempts, 1 second intervals
+      console.log('📊 Payment status result:', result);
       
       if (result.success) {
+        console.log('✅ Payment verification successful');
         setPaymentData(result.status);
         setPaymentStatus('success');
         
@@ -41,12 +44,13 @@ const PaymentSuccessPage = () => {
         }, 3000);
         
       } else {
+        console.error('❌ Payment verification failed:', result);
         setError(result.error || 'Payment verification failed');
         setPaymentStatus('failed');
       }
       
     } catch (error) {
-      console.error('Payment verification error:', error);
+      console.error('💥 Payment verification error:', error);
       setError('Failed to verify payment');
       setPaymentStatus('failed');
     }
