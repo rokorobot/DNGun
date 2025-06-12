@@ -22,6 +22,7 @@ import DashboardPage from "./pages/DashboardPage";
 import MyDomainsPage from "./pages/MyDomainsPage";
 import ProfilePage from "./pages/ProfilePage";
 import APITestPage from "./pages/APITestPage";
+import MockStripeCheckoutPage from "./pages/MockStripeCheckoutPage";
 
 // API utilities
 import { domainAPI } from "./utils/api";
