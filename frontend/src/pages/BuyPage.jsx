@@ -89,9 +89,27 @@ const BuyPage = () => {
     newPriceRange[index] = parseInt(e.target.value);
     setPriceRange(newPriceRange);
     
-    const filtered = allDomains.filter(domain => {
-      const matchesCategory = activeFilter === 'all' || domain.category === activeFilter;
+    let filtered = allDomains.filter(domain => {
       const matchesPrice = domain.price >= newPriceRange[0] && domain.price <= newPriceRange[1];
+      
+      if (activeFilter === 'all') {
+        return matchesPrice;
+      }
+      
+      // Apply the same category mapping logic as in handleFilterChange
+      let matchesCategory = false;
+      if (activeFilter === 'popular-domains') {
+        matchesCategory = domain.category === 'premium' || 
+                         domain.category === 'standard' || 
+                         domain.featured === true;
+      } else if (activeFilter === '3-letter-domains') {
+        matchesCategory = domain.category === 'three-letter';
+      } else if (activeFilter === 'premium-domains') {
+        matchesCategory = domain.category === 'premium';
+      } else {
+        matchesCategory = domain.category === activeFilter;
+      }
+      
       return matchesCategory && matchesPrice;
     });
     
