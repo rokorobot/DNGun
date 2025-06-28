@@ -142,8 +142,12 @@ const BuyPage = () => {
                     {domainCategories.map(category => (
                       <button
                         key={category.id}
-                        className={`w-full text-left px-3 py-2 rounded-md transition-colors ${activeFilter === category.name.toLowerCase().replace(/[^a-z0-9]/g, '-') ? 'bg-accent-teal text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
-                        onClick={() => handleFilterChange(category.name.toLowerCase().replace(/\s+/g, '-').replace('3-', 'three-'))}
+                        className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
+                          activeFilter === category.name.toLowerCase().replace(/\s+/g, '-') 
+                            ? 'bg-accent-teal text-white' 
+                            : 'bg-white text-gray-700 hover:bg-gray-100'
+                        }`}
+                        onClick={() => handleFilterChange(category.name.toLowerCase().replace(/\s+/g, '-'))}
                       >
                         {category.name}
                       </button>
