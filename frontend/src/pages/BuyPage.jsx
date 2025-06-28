@@ -37,7 +37,24 @@ const BuyPage = () => {
     if (filter === 'all') {
       setFilteredDomains(allDomains);
     } else {
-      const filtered = allDomains.filter(domain => domain.category === filter);
+      // Map frontend category names to backend category names
+      let backendCategory = filter;
+      if (filter === 'popular-domains') {
+        // For popular domains, show premium and featured domains
+        const filtered = allDomains.filter(domain => 
+          domain.category === 'premium' || 
+          domain.category === 'standard' || 
+          domain.featured === true
+        );
+        setFilteredDomains(filtered);
+        return;
+      } else if (filter === '3-letter-domains') {
+        backendCategory = 'three-letter';
+      } else if (filter === 'premium-domains') {
+        backendCategory = 'premium';
+      }
+      
+      const filtered = allDomains.filter(domain => domain.category === backendCategory);
       setFilteredDomains(filtered);
     }
   };
